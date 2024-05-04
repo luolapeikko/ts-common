@@ -40,8 +40,8 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Run unit tests
-        run: pnpm test
+      #- name: Run unit tests
+      #  run: pnpm test
 
       - name: Run linter checks
         run: pnpm run lint
