@@ -5,7 +5,7 @@
  * @example
  * import type {Loadable} from '@luolapeikko/ts-common';
  * // example resolving a Loadable boolean
- * async function resolveBoolean(loadable: Loadable<boolean>): boolean {
+ * async function resolveBoolean(loadable: Loadable<boolean>): Promise<boolean> {
  *  return await (typeof loadable === 'function' ? loadable() : loadable);
  * }
  */
