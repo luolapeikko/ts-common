@@ -35,7 +35,7 @@ jobs:
 
       - name: Get current npmjs version for ${{env.PACKAGE_NAME}}
         run: |
-          echo "NPM_VERSION=$(curl -s https://registry.npmjs.org/${{ env.PACKAGE_NAME }} | jq -r '."dist-tags".latest')" >> $GITHUB_ENV
+          echo "NPM_VERSION=$(curl -s https://registry.npmjs.org/${{ env.PACKAGE_NAME }} | jq -r '."dist-tags".latest')" | tee $GITHUB_ENV
       
       - name: Install dependencies
         run: pnpm i
