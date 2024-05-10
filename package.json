@@ -12,10 +12,13 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "doc": "typedoc",
     "build": "tsup src/index.ts --sourcemap --format cjs,esm --dts --clean",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm run build",
     "lint": "eslint src",
     "test": "mocha"
   },
