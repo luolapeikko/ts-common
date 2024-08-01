@@ -1,17 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import 'mocha';
-import {arrayMap, objectEntries, objectKeys, objectValues} from '../src/';
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../src';
-
-const constDataObject = {
-	key: 'value',
-} as const;
-
-const baseDataObject: Record<string, string> = {
-	key: 'value',
-};
-
-const neverDataObject = {} as const;
+import {arrayMap, type NonEmptyArray, type NonEmptyReadonlyArray, objectEntries, objectKeys, objectValues} from '../src/';
 
 const mapTest = {
 	key: {
@@ -19,32 +8,49 @@ const mapTest = {
 	},
 } as const;
 
+type MixedType = {
+	readonly key: 'value';
+	normal: 'value2';
+};
+
+const demo: MixedType = {
+	key: 'value',
+	normal: 'value2',
+};
+
 describe('objectUtils', function () {
 	describe('objectKeys', function () {
 		it('should have valid types', function () {
-			const _constData: NonEmptyReadonlyArray<'key'> = objectKeys(constDataObject);
-			const _baseData: NonEmptyReadonlyArray<string> = objectKeys(baseDataObject);
-			const _neverData: Array<string> = objectKeys(neverDataObject);
+			const _constData: NonEmptyReadonlyArray<'key'> = objectKeys({key: 'value'} as const);
+			const _looseData: Array<'key'> = objectKeys({key: 'value'});
+			const _baseData: Array<string> = objectKeys<Record<string, string>>({key: 'value'});
+			const _mixedData: Array<'key' | 'normal'> = objectKeys(demo);
+			const _neverData: [] = objectKeys({});
 		});
 	});
 	describe('objectValues', function () {
 		it('should have valid types', function () {
-			const _constData: NonEmptyArray<'value'> = objectValues(constDataObject);
-			const _baseData: NonEmptyArray<string> = objectValues(baseDataObject);
-			const _neverData: Array<never> = objectValues(neverDataObject);
+			const _constData: NonEmptyReadonlyArray<'value'> = objectValues({key: 'value'} as const);
+			const _looseData: Array<string> = objectValues({key: 'value'});
+			const _baseData: Array<string> = objectValues<Record<string, string>>({key: 'value'});
+			const _mixedData: Array<'value' | 'value2'> = objectValues(demo);
+			const _neverData: [] = objectValues({});
 		});
 	});
 	describe('objectEntries', function () {
 		it('should have valid types', function () {
-			const _constData: NonEmptyArray<['key', 'value']> = objectEntries(constDataObject);
-			const _baseData: NonEmptyArray<[string, string]> = objectEntries(baseDataObject);
-			const _neverData: Array<[never, never]> = objectEntries(neverDataObject);
+			const _constData: NonEmptyReadonlyArray<['key', 'value']> = objectEntries({key: 'value'} as const);
+			const _looseData: Array<['key', string]> = objectEntries({key: 'value'});
+			const _baseData: Array<[string, string]> = objectEntries<Record<string, string>>({key: 'value'});
+			const _mixedData: Array<['key' | 'normal', 'value' | 'value2']> = objectEntries(demo);
+			const _neverData: [] = objectEntries({});
 		});
 	});
 	describe('objectEntries with map', function () {
 		it('should map valid types', function () {
-			const _constValue: NonEmptyReadonlyArray<'value'> = arrayMap(objectEntries(mapTest), ([_key, value]) => value.value);
-			const _constKey: NonEmptyArray<'key'> = arrayMap(objectEntries(mapTest), ([key, _value]) => key);
+			const entries = objectEntries(mapTest);
+			const _constPickValue: NonEmptyArray<'value'> = arrayMap<'value', typeof entries>(entries, ([_key, value]) => value.value);
+			const _constPickKey: NonEmptyArray<'key'> = arrayMap(entries, ([key, _value]) => key);
 		});
 	});
 });

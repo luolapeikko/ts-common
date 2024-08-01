@@ -1,29 +1,59 @@
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
-import {type NonEmpty} from '../types/NonEmpty';
+import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
+import {type RecordHaveWritableKeys} from '../types/object';
+
+type EmptyObject = Record<string | number | symbol, never>;
+
+/**
+ * Type  mapping for Object.entries, Object.keys, Object.values
+ * 1. if R is an empty object, return []
+ * 2. if R has no writable keys, return NonEmptyReadonlyArray<T>
+ * 3. otherwise, return Array<T>
+ */
+type ObjectMappedArray<R extends Record<string | number | symbol, unknown>, T> = R extends EmptyObject
+	? []
+	: RecordHaveWritableKeys<R> extends never
+		? NonEmptyReadonlyArray<T>
+		: Array<T>;
 
 /**
  * Type-safe Object.entries() with overload for NonEmptyArray
+ * @example
+ * const result1: NonEmptyReadonlyArray<['key', 'value']> = objectEntries({key: 'value'} as const);
+ * const result2: Array<['key', string]> = objectEntries({key: 'value'});
+ * const result3: Array<[string, string]> = objectEntries<Record<string, string>>({key: 'value'});
+ * const result4: [] = objectEntries({});
+ * @template R - The object shape
+ * @param value - The object shape to get the values from
+ * @returns {Array<[Key, Value]> | NonEmptyArray<[Key, Value]>} Array of tuples with key and value
  */
-export function objectEntries<Key extends string, Value>(value: NonEmpty<Record<Key, Value>>): NonEmptyArray<[Key, Value]>;
-export function objectEntries<Key extends string, Value>(value: Record<Key, Value>): Array<[Key, Value]>;
-export function objectEntries<Key extends string, Value>(value: Record<Key, Value>): Array<[Key, Value]> {
-	return Object.entries(value) as Array<[Key, Value]>;
+export function objectEntries<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, [keyof R, R[keyof R]]> {
+	return Object.entries(value) as ObjectMappedArray<R, [keyof R, R[keyof R]]>;
 }
 
 /**
  * Type-safe Object.keys() with overload for NonEmptyArray
+ * @example
+ * const result1: NonEmptyReadonlyArray<'key'> = objectKeys({key: 'value'} as const);
+ * const result2: Array<'key'> = objectKeys({key: 'value'});
+ * const result3: Array<string> = objectKeys<Record<string, string>>({key: 'value'});
+ * const result4: [] = objectKeys({});
+ * @template R - The object shape
+ * @param value - The object shape to get the values from
+ * @returns {Array<Key> | NonEmptyReadonlyArray<Key>} Array of object keys
  */
-export function objectKeys<Key extends string, Value>(value: NonEmpty<Record<Key, Value>>): NonEmptyReadonlyArray<Key>;
-export function objectKeys<Key extends string, Value>(value: Record<Key, Value>): Array<Key>;
-export function objectKeys<Key extends string, Value>(value: Record<Key, Value>): Array<Key> | NonEmptyReadonlyArray<Key> {
-	return Object.keys(value) as Array<Key>;
+export function objectKeys<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, keyof R> {
+	return Object.keys(value) as ObjectMappedArray<R, keyof R>;
 }
-
 /**
  * Type-safe Object.values() with overload for NonEmptyArray
+ * @example
+ * const result1: NonEmptyReadonlyArray<'value'> = objectValues({key: 'value'} as const);
+ * const result2: Array<string> = objectValues({key: 'value'});
+ * const result3: [] = objectValues({});
+ * @template R - The object shape
+ * @param value - The object shape to get the values from
+ * @returns {Array<Value> | NonEmptyReadonlyArray<Value>} Array of object values
  */
-export function objectValues<Key extends string, Value>(value: NonEmpty<Record<Key, Value>>): NonEmptyArray<Value>;
-export function objectValues<Key extends string, Value>(value: Record<Key, Value>): Array<Value>;
-export function objectValues<Key extends string, Value>(value: Record<Key, Value>): Array<Value> {
-	return Object.values(value);
+export function objectValues<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
+	return Object.values(value) as ObjectMappedArray<R, R[keyof R]>;
 }
