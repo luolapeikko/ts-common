@@ -1,8 +1,8 @@
 import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
 
-type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | Array<T>;
+export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | Array<T>;
 
-type MapCallback<Target, Source extends AnyArrayType> = (value: Source[number], index: number, array: readonly Source[number][]) => Target;
+export type MapCallback<Target, Source extends AnyArrayType> = (value: Source[number], index: number, array: readonly Source[number][]) => Target;
 
 /**
  * Array map function with overload for NonEmptyArray

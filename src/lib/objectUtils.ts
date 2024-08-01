@@ -1,7 +1,7 @@
 import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
 import {type RecordHaveWritableKeys} from '../types/object';
 
-type EmptyObject = Record<string | number | symbol, never>;
+export type EmptyObject = Record<string | number | symbol, never>;
 
 /**
  * Type  mapping for Object.entries, Object.keys, Object.values
@@ -9,7 +9,7 @@ type EmptyObject = Record<string | number | symbol, never>;
  * 2. if R has no writable keys, return NonEmptyReadonlyArray<T>
  * 3. otherwise, return Array<T>
  */
-type ObjectMappedArray<R extends Record<string | number | symbol, unknown>, T> = R extends EmptyObject
+export type ObjectMappedArray<R extends Record<string | number | symbol, unknown>, T> = R extends EmptyObject
 	? []
 	: RecordHaveWritableKeys<R> extends never
 		? NonEmptyReadonlyArray<T>
