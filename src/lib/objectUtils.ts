@@ -1,5 +1,5 @@
+import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
 import {type NonEmpty} from '../types/NonEmpty';
-import {type NonEmptyArray} from '../types/NonEmptyArray';
 
 /**
  * Type-safe Object.entries() with overload for NonEmptyArray
@@ -13,9 +13,9 @@ export function objectEntries<Key extends string, Value>(value: Record<Key, Valu
 /**
  * Type-safe Object.keys() with overload for NonEmptyArray
  */
-export function objectKeys<Key extends string, Value>(value: NonEmpty<Record<Key, Value>>): NonEmptyArray<Key>;
+export function objectKeys<Key extends string, Value>(value: NonEmpty<Record<Key, Value>>): NonEmptyReadonlyArray<Key>;
 export function objectKeys<Key extends string, Value>(value: Record<Key, Value>): Array<Key>;
-export function objectKeys<Key extends string, Value>(value: Record<Key, Value>): Array<Key> {
+export function objectKeys<Key extends string, Value>(value: Record<Key, Value>): Array<Key> | NonEmptyReadonlyArray<Key> {
 	return Object.keys(value) as Array<Key>;
 }
 

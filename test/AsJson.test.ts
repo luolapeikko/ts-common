@@ -1,6 +1,6 @@
 import 'mocha';
-import {Equal, Expect} from 'type-testing';
-import {AsJson} from '../src/';
+import {type Equal, type Expect} from 'type-testing';
+import {type AsJson} from '../src/';
 
 describe('Test AsJson', function () {
 	it('should have valid types', function () {
