@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
+		"module": "NodeNext",
 		"lib": ["es2015"],
-		"module": "es2015",
 		"target": "es2015",
 		"rootDir": "./src",
 		"outDir": "./dist",
+		"moduleResolution": "NodeNext",
 		"sourceRoot": "./src",
 		"types": ["node"],
 		"sourceMap": true,
@@ -20,7 +21,7 @@
 		"importHelpers": true,
 		"strictNullChecks": true,
 		"noUnusedLocals": true,
-		"esModuleInterop": false,
+		"esModuleInterop": true,
 		"noUncheckedIndexedAccess": true,
 		"skipLibCheck": true
 	},
@@ -28,6 +29,9 @@
 		"entryPoints": ["src/index.ts"],
 		"out": "docs"
 	},
-	"include": ["src/**/*", "src/**/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts", "test"]
+	"include": ["src/"],
+	"exclude": ["test/", "dist/", "node_modules/"],
+	"ts-node": {
+		"esm": true
+	}
 }

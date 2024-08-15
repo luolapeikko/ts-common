@@ -1,4 +1,4 @@
-import type {AsJson} from '../types/AsJson';
+import type {AsJson} from '../types/AsJson.js';
 
 /**
  * Interface for classes that can be converted to JSON.

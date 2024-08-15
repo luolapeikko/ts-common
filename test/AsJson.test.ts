@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import 'mocha';
 import {type Equal, type Expect} from 'type-testing';
-import {type AsJson} from '../src/';
+import {type AsJson} from '../src/index.js';
 
 describe('Test AsJson', function () {
 	it('should have valid types', function () {

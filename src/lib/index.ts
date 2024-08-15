@@ -1,3 +1,4 @@
-export * from './errorUtils';
-export * from './objectUtils';
-export * from './arrayMapUtils';
+export * from './errorUtils.js';
+export * from './objectUtils.js';
+export * from './arrayMapUtils.js';
+export * from './UnknownError.js';

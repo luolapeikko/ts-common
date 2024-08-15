@@ -1,4 +1,4 @@
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
+import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.js';
 
 export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | Array<T>;
 

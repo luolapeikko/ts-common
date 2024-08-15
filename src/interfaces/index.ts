@@ -1,2 +1,2 @@
-export * from './IToJSON';
-export * from './IToString';
+export * from './IToJSON.js';
+export * from './IToString.js';

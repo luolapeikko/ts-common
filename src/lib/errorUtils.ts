@@ -1,7 +1,10 @@
+import {UnknownError} from './UnknownError.js';
+
 /**
- * Get or create an error from the given value.
+ * Get or create an error from the given value, if it's not an error, it will be wrapped in an UnknownError.
  * @param error - Error instance or error message.
  * @returns Error instance.
+ * @see {@link UnknownError}
  * @example
  * try {
  *   // ...
@@ -9,20 +12,21 @@
  *   console.log(toError(err).message);
  * }
  */
-export function toError(error: unknown): Error {
+export function toError(error: unknown): Error | UnknownError {
 	if (error instanceof Error) {
 		return error;
 	}
 	if (typeof error === 'string') {
 		return new Error(error);
 	}
-	return new TypeError(`Unknown error: ${JSON.stringify(error)}`);
+	return new UnknownError(error);
 }
 
 /**
  * Asserts that the given value is an Error.
  * @param error - Error to assert.
  * @throws If the given value is not an Error.
+ * @see {@link toError}
  * @example
  * try {
  *   // ...

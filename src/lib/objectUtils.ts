@@ -1,5 +1,5 @@
-import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray';
-import {type RecordHaveWritableKeys} from '../types/object';
+import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray.js';
+import {type RecordHaveWritableKeys} from '../types/object.js';
 
 export type EmptyObject = Record<string | number | symbol, never>;
 
