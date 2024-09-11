@@ -1,14 +1,19 @@
 /**
  * A type that can be loaded directly, Promise or a function that returns the value or a Promise.
  *
- * @template T The type of the value that can be loaded.
- *
- * Note: 'T' can't be a function as resolving a function from function would be problematic.
+ * @template T The type of the value that can be loaded (T can't be a function).
  * @example
- * import type {Loadable} from '@luolapeikko/ts-common';
- * // example resolving a Loadable boolean
- * async function resolveBoolean(loadable: Loadable<boolean>): Promise<boolean> {
- *  return await (typeof loadable === 'function' ? loadable() : loadable);
+ * import {type Loadable, resolveLoadable} from '@luolapeikko/ts-common';
+ * // example resolving a Loadable string
+ * async function demo(loadable: Loadable<string>) {
+ *   const value1: string = await (typeof loadable === 'function' ? loadable() : loadable);
+ *   const value2: string = await resolveLoadable(loadable);
  * }
  */
 export type Loadable<T> = T | Promise<T> | (() => T | Promise<T>);
+
+/**
+ * Extracts the type of the resolved value of a loadable.
+ * @template T The Loadable type.
+ */
+export type ResolvedLoadable<T> = T extends Loadable<infer U> ? U | Promise<U> : never;
