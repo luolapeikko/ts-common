@@ -1,6 +1,6 @@
 {
   "name": "@luolapeikko/ts-common",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Typescript common utils and types",
   "type": "module",
   "main": "./dist/index.cjs",
