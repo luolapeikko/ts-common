@@ -1,4 +1,4 @@
-import {UnknownError} from './UnknownError.js';
+import {UnknownError} from './UnknownError.mjs';
 
 /**
  * Get or create an error from the given value, if it's not an error, it will be wrapped in an UnknownError.

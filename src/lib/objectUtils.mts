@@ -1,5 +1,5 @@
-import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray.js';
-import {type RecordHaveWritableKeys} from '../types/object.js';
+import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
+import {type RecordHaveWritableKeys} from '../types/object.mjs';
 
 /**
  * Type for an empty object

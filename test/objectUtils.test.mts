@@ -1,6 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import 'mocha';
-import {arrayMap, type NonEmptyArray, type NonEmptyReadonlyArray, objectEntries, objectKeys, objectValues} from '../src/index.js';
+import {arrayMap, type NonEmptyArray, type NonEmptyReadonlyArray, objectEntries, objectKeys, objectValues} from '../src/index.mjs';
 import {expect} from 'chai';
 
 const mapTest = {

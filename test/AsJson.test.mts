@@ -2,7 +2,7 @@
 // @ts-nocheck
 import 'mocha';
 import {type Equal, type Expect} from 'type-testing';
-import {type AsJson} from '../src/index.js';
+import {type AsJson} from '../src/index.mjs';
 
 describe('Test AsJson', function () {
 	it('should have valid types', function () {

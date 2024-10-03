@@ -1,4 +1,4 @@
-import {type IfReadonlyKeys, type IfWritableKeys} from './helper.js';
+import {type IfReadonlyKeys, type IfWritableKeys} from './helper.mjs';
 
 /**
  * Check if a record is readonly or never

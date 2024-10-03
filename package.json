@@ -17,16 +17,16 @@
   ],
   "scripts": {
     "doc": "typedoc",
-    "build": "tsup src/index.ts --sourcemap --format cjs,esm --dts --clean",
+    "build": "tsup src/index.mts --sourcemap --format cjs,esm --dts --clean",
     "prepublishOnly": "pnpm run build",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .mts",
     "test": "mocha",
     "validate": "tsc --noEmit --project tsconfig.test.json"
   },
   "mocha": {
     "exit": true,
     "extension": [
-      "ts",
+      "mts",
       "js"
     ],
     "recursive": true,

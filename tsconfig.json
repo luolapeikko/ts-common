@@ -26,7 +26,7 @@
 		"skipLibCheck": true
 	},
 	"typedocOptions": {
-		"entryPoints": ["src/index.ts"],
+		"entryPoints": ["src/index.mts"],
 		"out": "docs"
 	},
 	"include": ["src/"],

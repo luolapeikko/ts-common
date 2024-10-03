@@ -1,4 +1,4 @@
-import {type Loadable, type ResolvedLoadable} from '../types/Loadable.js';
+import {type Loadable, type ResolvedLoadable} from '../types/Loadable.mjs';
 
 /**
  * Resolves a loadable to a promise

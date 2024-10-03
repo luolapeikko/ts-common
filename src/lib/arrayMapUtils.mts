@@ -1,4 +1,4 @@
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.js';
+import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
 
 /**
  * Array map function with overload for NonEmptyArray
