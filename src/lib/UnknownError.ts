@@ -2,6 +2,7 @@
  * Unknown error class, used to wrap unknown thrown errors.
  * @extends TypeError
  * @see [toError](https://luolapeikko.github.io/ts-common/functions/toError.html)
+ * @version 0.2.0
  * @example
  * } catch (err) {
  *   console.err(( err instanceof Error ? err : new UnknownError(err)).message);

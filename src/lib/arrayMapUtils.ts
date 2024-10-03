@@ -1,7 +1,20 @@
 import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.js';
 
+/**
+ * Array map function with overload for NonEmptyArray
+ * @version 0.2.0
+ */
 export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | Array<T>;
 
+/**
+ * Array map callback function
+ * @template Target - The type of the array to map to
+ * @template Source - The type of the array to map from
+ * @param value - The value to map
+ * @param index - The index of the value in the array
+ * @param array - The array being mapped
+ * @version 0.2.0
+ */
 export type MapCallback<Target, Source extends AnyArrayType> = (value: Source[number], index: number, array: readonly Source[number][]) => Target;
 
 /**
@@ -14,6 +27,7 @@ export type MapCallback<Target, Source extends AnyArrayType> = (value: Source[nu
  * @template Source - The type of the array to map from
  * @param data - The array to map
  * @param callback - Callback function to map data from the array
+ * @version 0.2.0
  */
 export function arrayMap<Target, Source extends NonEmptyArray<unknown> | NonEmptyReadonlyArray<unknown>>(
 	data: Source,

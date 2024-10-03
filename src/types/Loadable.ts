@@ -2,6 +2,7 @@
  * A type that can be loaded directly, Promise or a function that returns the value or a Promise.
  *
  * @template T The type of the value that can be loaded (T can't be a function).
+ * @version 0.0.1
  * @example
  * import {type Loadable, resolveLoadable} from '@luolapeikko/ts-common';
  * // example resolving a Loadable string
@@ -15,5 +16,6 @@ export type Loadable<T> = T | Promise<T> | (() => T | Promise<T>);
 /**
  * Extracts the type of the resolved value of a loadable.
  * @template T The Loadable type.
+ * @version 0.2.0
  */
 export type ResolvedLoadable<T> = T extends Loadable<infer U> ? U | Promise<U> : never;

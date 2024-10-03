@@ -5,6 +5,7 @@ import {type Loadable, type ResolvedLoadable} from '../types/Loadable.js';
  * @template T The Loadable type.
  * @param {T} loadable - Loadable value to resolve.
  * @returns {ResolvedLoadable<T>} Resolved value or Promise that resolves to the value.
+ * @version 0.2.0
  * @example
  * async function demo(loadable: Loadable<string>) {
  *   const value: string = await resolveLoadable(loadable);
