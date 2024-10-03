@@ -3,7 +3,7 @@ import {type RecordHaveWritableKeys} from '../types/object.js';
 
 /**
  * Type for an empty object
- * @version 0.2.0
+ * @since v0.2.0
  */
 export type EmptyObject = Record<string | number | symbol, never>;
 
@@ -12,7 +12,7 @@ export type EmptyObject = Record<string | number | symbol, never>;
  * 1. if R is an empty object, return []
  * 2. if R has no writable keys, return NonEmptyReadonlyArray<T>
  * 3. otherwise, return Array<T>
- * @version 0.2.0
+ * @since v0.2.0
  */
 export type ObjectMappedArray<R extends Record<string | number | symbol, unknown>, T> = R extends EmptyObject
 	? []
@@ -30,7 +30,7 @@ export type ObjectMappedArray<R extends Record<string | number | symbol, unknown
  * @template R - The object shape
  * @param value - The object shape to get the values from
  * @returns {Array<[Key, Value]> | NonEmptyArray<[Key, Value]>} Array of tuples with key and value
- * @version 0.2.0
+ * @since v0.2.0
  */
 export function objectEntries<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, [keyof R, R[keyof R]]> {
 	return Object.entries(value) as ObjectMappedArray<R, [keyof R, R[keyof R]]>;
@@ -46,7 +46,7 @@ export function objectEntries<R extends Record<string | number | symbol, unknown
  * @template R - The object shape
  * @param value - The object shape to get the values from
  * @returns {Array<Key> | NonEmptyReadonlyArray<Key>} Array of object keys
- * @version 0.2.0
+ * @since v0.2.0
  */
 export function objectKeys<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, keyof R> {
 	return Object.keys(value) as ObjectMappedArray<R, keyof R>;
@@ -60,7 +60,7 @@ export function objectKeys<R extends Record<string | number | symbol, unknown>>(
  * @template R - The object shape
  * @param value - The object shape to get the values from
  * @returns {Array<Value> | NonEmptyReadonlyArray<Value>} Array of object values
- * @version 0.2.0
+ * @since v0.2.0
  */
 export function objectValues<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
 	return Object.values(value) as ObjectMappedArray<R, R[keyof R]>;

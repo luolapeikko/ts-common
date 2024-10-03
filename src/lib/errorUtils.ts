@@ -5,7 +5,7 @@ import {UnknownError} from './UnknownError.js';
  * @param error - Error instance or error message.
  * @returns Error instance.
  * @see {@link UnknownError}
- * @version 0.1.0
+ * @since v0.1.0
  * @example
  * try {
  *   // ...
@@ -28,7 +28,7 @@ export function toError(error: unknown): Error | UnknownError {
  * @param error - Error to assert.
  * @throws If the given value is not an Error.
  * @see {@link toError}
- * @version 0.1.0
+ * @since v0.1.0
  * @example
  * try {
  *   // ...
