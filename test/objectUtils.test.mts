@@ -50,13 +50,21 @@ describe('objectUtils', function () {
 	});
 	describe('objectEntries', function () {
 		it('should have valid types', function () {
-			const _constData: NonEmptyReadonlyArray<['key', 'value']> = objectEntries({key: 'value'} as const);
-			expect(_constData).to.deep.equal([['key', 'value']]);
+			const _constData: NonEmptyReadonlyArray<['key', 'value'] | ['key2', 'value2']> = objectEntries({key: 'value', key2: 'value2'} as const);
+			const entry = _constData.find(([key]) => key === 'key');
+			if (entry?.[0] === 'key') {
+				const _constPickValue: 'value' = entry[1]; // ensures the value type is matching 'value' for this tuple type
+				expect(_constPickValue).to.equal('value');
+			}
+			expect(_constData).to.deep.equal([
+				['key', 'value'],
+				['key2', 'value2'],
+			]);
 			const _looseData: Array<['key', string]> = objectEntries({key: 'value'});
 			expect(_looseData).to.deep.equal([['key', 'value']]);
 			const _baseData: Array<[string, string]> = objectEntries<Record<string, string>>({key: 'value'});
 			expect(_baseData).to.deep.equal([['key', 'value']]);
-			const _mixedData: Array<['key' | 'normal', 'value' | 'value2']> = objectEntries(demo);
+			const _mixedData: Array<['key', 'value'] | ['normal', 'value2']> = objectEntries(demo);
 			expect(_mixedData).to.deep.equal([
 				['key', 'value'],
 				['normal', 'value2'],
