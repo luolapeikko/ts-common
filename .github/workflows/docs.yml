@@ -16,7 +16,7 @@ permissions:
   id-token: write
 
 env:
-    NPM: 'pnpm'
+  NPM: 'npm'
 
 jobs:
   # Single deploy job since we're just deploying
@@ -33,6 +33,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Identify project environment variables
+        run: |
+          [ -f pnpm-lock.yaml ] && echo "NPM=pnpm" || echo "NPM=npm"  >> $GITHUB_ENV
+
       - uses: pnpm/action-setup@v4
         if: env.NPM == 'pnpm'
       - uses: actions/setup-node@v4
@@ -41,7 +46,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: pnpm install
+        run: ${{ env.NPM }} install
 
       - name: TSDoc Action
         uses: erikyo/tsdoc-action@v1
