@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import 'mocha';
+import {describe, expect, it} from 'vitest';
 import {type Loadable, resolveLoadable} from '../src/index.mjs';
-import {expect} from 'chai';
 
 describe('loadableUtils', function () {
 	describe('resolveLoadable', function () {

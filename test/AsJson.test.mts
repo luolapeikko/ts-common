@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-import 'mocha';
+import {describe, it} from 'vitest';
 import {type Equal, type Expect} from 'type-testing';
 import {type AsJson} from '../src/index.mjs';
 

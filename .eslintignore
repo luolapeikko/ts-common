@@ -2,3 +2,4 @@ dist
 node_modules
 .github
 .nyc_output
+vite.config.mts
