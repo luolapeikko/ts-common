@@ -36,7 +36,7 @@ jobs:
 
       - name: Identify project environment variables
         run: |
-          [ -f pnpm-lock.yaml ] && echo "NPM=pnpm" >> $GITHUB_ENV
+          [ -f pnpm-lock.yaml ] && echo "NPM=pnpm" | tee -a $GITHUB_ENV
 
       - uses: pnpm/action-setup@v4
         if: env.NPM == 'pnpm'
