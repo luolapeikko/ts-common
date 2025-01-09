@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import {defineConfig} from 'vite';
+import {defineConfig} from 'vitest/config';
 
 export default defineConfig({
 	test: {
@@ -14,5 +14,9 @@ export default defineConfig({
 			reporter: ['text'],
 		},
 		include: ['test/**/*.test.mts'],
+		typecheck: {
+			tsconfig: './tsconfig.test.json',
+			include: ['test/**/*.test-d.mts']
+		}
 	},
 });
