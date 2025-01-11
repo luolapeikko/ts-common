@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import {describe, expect, it} from 'vitest';
 import {type Loadable, resolveLoadable} from '../src/index.mjs';
 

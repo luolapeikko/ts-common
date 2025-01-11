@@ -1,6 +1,5 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-import {arrayMap, type NonEmptyArray, type NonEmptyReadonlyArray, objectEntries, objectKeys, objectValues} from '../src/index.mjs';
 import {describe, expect, it} from 'vitest';
+import {arrayMap, type NonEmptyArray, type NonEmptyReadonlyArray, objectEntries, objectKeys, objectValues} from '../src/index.mjs';
 
 const mapTest = {
 	key: {
@@ -20,7 +19,7 @@ const demo: MixedType = {
 
 describe('objectUtils', function () {
 	describe('objectKeys', function () {
-		it('should have valid types', function () {
+		it('should have valid key array types', function () {
 			const _constData: NonEmptyReadonlyArray<'key'> = objectKeys({key: 'value'} as const);
 			expect(_constData).to.deep.equal(['key']);
 			const _looseData: Array<'key'> = objectKeys({key: 'value'});
@@ -34,7 +33,7 @@ describe('objectUtils', function () {
 		});
 	});
 	describe('objectValues', function () {
-		it('should have valid types', function () {
+		it('should have valid value array types', function () {
 			const _constData: NonEmptyReadonlyArray<'value'> = objectValues({key: 'value'} as const);
 			expect(_constData).to.deep.equal(['value']);
 			const _looseData: Array<string> = objectValues({key: 'value'});
@@ -48,7 +47,7 @@ describe('objectUtils', function () {
 		});
 	});
 	describe('objectEntries', function () {
-		it('should have valid types', function () {
+		it('should have valid entry types', function () {
 			const _constData: NonEmptyReadonlyArray<['key', 'value'] | ['key2', 'value2']> = objectEntries({key: 'value', key2: 'value2'} as const);
 			const entry = _constData.find(([key]) => key === 'key');
 			if (entry?.[0] === 'key') {

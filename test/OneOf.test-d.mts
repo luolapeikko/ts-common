@@ -14,12 +14,12 @@ const invalidObject = {
 };
 
 describe('Test OneOf', function () {
-	it('should assert valid types', function () {
+	it('should assert valid OneOf or union types', function () {
 		assertType<Demo1 | Demo2>(validObject);
 		assertType<OneOf<[Demo1, Demo2]>>(validObject);
-	});
-	it('should assert invalid types', function () {
 		assertType<Demo1 | Demo2>(invalidObject);
+	});
+	it('should assert invalid OneOf types', function () {
 		// @ts-expect-error Type 'string' is not assignable to type 'undefined'
 		assertType<OneOf<[Demo1, Demo2]>>(invalidObject);
 	});

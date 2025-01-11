@@ -1,6 +1,5 @@
-/* eslint-disable sonarjs/no-duplicate-string */
-import {arrayMap, type NonEmptyArray} from '../src/index.mjs';
 import {describe, expect, it} from 'vitest';
+import {arrayMap, type NonEmptyArray} from '../src/index.mjs';
 
 const looseValue: Record<'value', string> = {
 	value: 'value',
@@ -11,7 +10,7 @@ const neverDataArray: Array<{value: string}> = [];
 
 describe('objectUtils', function () {
 	describe('objectKeys', function () {
-		it('should have valid types', function () {
+		it('should have valid array map types', function () {
 			const _constData: NonEmptyArray<'value'> = arrayMap([{value: 'value'}] as const, (value) => value.value);
 			expect(_constData).to.deep.equal(['value']);
 			const _constValueData: NonEmptyArray<string> = arrayMap([looseValue] as const, (value) => value.value);
