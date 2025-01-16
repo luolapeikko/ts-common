@@ -1,3 +1,16 @@
+function buildUnknownMessage(unknownError: unknown): string {
+	if (typeof unknownError === 'string') {
+		return `Unknown error: "${unknownError}"`;
+	}
+	if (unknownError instanceof Error) {
+		return `Unknown error: "${unknownError.message}"`;
+	}
+	if (typeof unknownError === 'object' && unknownError !== null && 'message' in unknownError && typeof unknownError.message === 'string') {
+		return `Unknown error: "${unknownError.message}"`;
+	}
+	return `Unknown error: ${JSON.stringify(unknownError)}`;
+}
+
 /**
  * Unknown error class, used to wrap unknown thrown errors.
  * @extends TypeError
@@ -18,7 +31,7 @@ export class UnknownError extends TypeError {
 	 * @param unknownError - The unknown error value to wrap.
 	 */
 	constructor(unknownError: unknown) {
-		super(`Unknown error: ${JSON.stringify(unknownError)}`);
+		super(buildUnknownMessage(unknownError));
 		this.unknownError = unknownError;
 		this.name = 'UnknownError';
 		// try to copy some properties from the original object if exists

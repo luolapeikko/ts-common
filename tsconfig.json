@@ -30,7 +30,7 @@
 		"out": "docs"
 	},
 	"include": ["src/"],
-	"exclude": ["test/", "dist/", "node_modules/"],
+	"exclude": ["test/", "dist/", "node_modules/","*.test.mts"],
 	"ts-node": {
 		"esm": true
 	}

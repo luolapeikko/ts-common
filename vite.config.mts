@@ -13,10 +13,10 @@ export default defineConfig({
 			include: ['src/**/*.mts'],
 			reporter: ['text'],
 		},
-		include: ['test/**/*.test.mts'],
+		include: ['**/*.test.mts'],
 		typecheck: {
 			tsconfig: './tsconfig.test.json',
-			include: ['test/**/*.test-d.mts']
+			include: ['**/*.test-d.mts']
 		}
 	},
 });
