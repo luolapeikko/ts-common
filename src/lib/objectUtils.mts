@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
 import {type RecordHaveWritableKeys} from '../types/object.mjs';
 
@@ -85,4 +86,62 @@ export function objectKeys<R extends Record<string | number | symbol, unknown>>(
  */
 export function objectValues<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
 	return Object.values(value) as ObjectMappedArray<R, R[keyof R]>;
+}
+
+type KeyCallback<O extends Record<PropertyKey, any>, K extends keyof O> = (key: K, value: O[K], object: O) => boolean;
+
+/**
+ * Filter and include specific keys from an object (Based on https://github.com/sindresorhus/filter-obj)
+ * @example
+ * const object = {
+ *   foo: true,
+ *   bar: false
+ * };
+ * const newObject = includeKeys(object, (key, value, obj) => value === true); //=> {foo: true}
+ * const newObject = includeKeys(object, ['bar']); //=> {bar: false}
+ * @since v0.2.8
+ */
+export function includeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, keys: Iterable<K>): Pick<O, K>;
+export function includeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, keyCallback: KeyCallback<O, K>): Partial<O>;
+export function includeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, keyOrCallback: Iterable<K> | KeyCallback<O, K>): Partial<O> {
+	const isCallback = typeof keyOrCallback === 'function';
+	const keys = isCallback ? Reflect.ownKeys(object) : Array.from(keyOrCallback);
+	const result = keys.reduce<Partial<O>>((acc, key) => {
+		const descriptor = Object.getOwnPropertyDescriptor(object, key);
+		if (!descriptor?.enumerable) {
+			return acc;
+		}
+		if (isCallback) {
+			if (keyOrCallback(key as K, object[key as K], object)) {
+				Object.defineProperty(acc, key, descriptor);
+			}
+		} else {
+			Object.defineProperty(acc, key, descriptor);
+		}
+		return acc;
+	}, {});
+	return Object.setPrototypeOf(result, Object.getPrototypeOf(object) as object | null) as Partial<O>;
+}
+
+type DistributiveOmit<Value, Key extends PropertyKey> = Value extends unknown ? Omit<Value, Key> : never;
+
+/**
+ * Filter and exclude specific keys from an object (Based on https://github.com/sindresorhus/filter-obj)
+ * @example
+ * const object = {
+ *   foo: true,
+ *   bar: false
+ * };
+ * const newObject = excludeKeys(object, (key, value) => value === true); //=> {bar: false}
+ * const newObject = excludeKeys(object, ['bar']); //=> {foo: true}
+ * @since v0.2.8
+ */
+export function excludeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, key: Iterable<K>): DistributiveOmit<O, K>;
+export function excludeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, keyCallback: KeyCallback<O, K>): Partial<O>;
+export function excludeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, keyOrCallback: Iterable<K> | KeyCallback<O, K>): Partial<O> {
+	if (typeof keyOrCallback === 'function') {
+		return includeKeys(object, (key, value, object) => !keyOrCallback(key as K, value as O[K], object));
+	}
+	const keySet = new Set(keyOrCallback);
+	return includeKeys(object, (key) => !keySet.has(key as K));
 }
