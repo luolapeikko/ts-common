@@ -13,5 +13,12 @@ npm install @luolapeikko/ts-common
 ```
 
 ### Documentation
+- `Loadable` type to handle loadable value (e.g. value, value Promise, callback function returning value).
+- Array utility types like `NonEmptyArray` and `NonEmptyReadonlyArray`.
+- Object utility conditional types like `RecordHaveReadonlyKeys` and `RecordHaveWritableKeys`.
+- `OneOf` type to handle one of types (non-union way).
+- Object replacement functions like `objectEntries`, `objectKeys`, `objectValues` and `objectMap` to handle better return types.
+- Error utils like `toError(value: unknown): Error | UnknownError`.
+- Helper interfaces like `IToString`, `IToJSON`.
 
-[Package documentation](https://luolapeikko.github.io/ts-common/)
+See more features on [Package documentation](https://luolapeikko.github.io/ts-common/)

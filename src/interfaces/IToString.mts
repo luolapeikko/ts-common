@@ -5,6 +5,6 @@
  * class MyClass implements IToString {}
  * @since v0.0.1
  */
-export interface IToString {
-	toString(): string;
+export interface IToString<T extends string = string> {
+	toString(): T;
 }
