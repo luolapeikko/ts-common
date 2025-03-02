@@ -46,7 +46,7 @@ export function assertError(error: unknown): asserts error is Error {
 function cloneErrorProperties<ET extends Error>(source: Error, target: ET): ET {
 	// copy cause if supported
 	if ('cause' in source) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		(target as any).cause = source.cause;
 	}
 	// copy stack

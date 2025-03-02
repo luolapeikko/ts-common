@@ -124,6 +124,8 @@ export default [
 			],
 			'@typescript-eslint/no-unnecessary-condition': 'off',
 			'sonarjs/use-type-alias': 'off',
+			'@typescript-eslint/no-unsafe-function-type': 'off',
+			'@typescript-eslint/no-explicit-any': 'off',
 		},
 	},
 	{

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
 import {type RecordHaveWritableKeys} from '../types/object.mjs';
 

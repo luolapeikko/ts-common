@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * from https://github.com/typed-rocks/typescript/blob/main/one_of.ts
  */

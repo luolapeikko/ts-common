@@ -11,11 +11,11 @@
  *   const value2: string = await resolveLoadable(loadable);
  * }
  */
-export type Loadable<T> = T | Promise<T> | (() => T | Promise<T>);
+export type Loadable<T> = T extends Function ? never : T extends (...args: any[]) => any ? never : T | Promise<T> | (() => T | Promise<T>);
 
 /**
  * Extracts the type of the resolved value of a loadable.
  * @template T The Loadable type.
  * @since v0.2.0
  */
-export type ResolvedLoadable<T> = T extends Loadable<infer U> ? U | Promise<U> : never;
+export type ResolvedLoadable<T> = T extends Function ? never : T extends (...args: any[]) => any ? never : T extends Loadable<infer U> ? U | Promise<U> : never;
