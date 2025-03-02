@@ -13,5 +13,5 @@ import {type Loadable, type ResolvedLoadable} from '../types/Loadable.mjs';
  */
 export function resolveLoadable<T extends Loadable<unknown>>(loadable: T): ResolvedLoadable<T> {
 	// eslint-disable-next-line
-	return typeof loadable === 'function' ? loadable() : loadable;
+	return typeof loadable === 'function' ? loadable() : loadable as ResolvedLoadable<T>;
 }
