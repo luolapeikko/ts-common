@@ -42,5 +42,8 @@ export class UnknownError extends TypeError {
 		if (!this.stack) {
 			Error.captureStackTrace(this, this.constructor);
 		}
+		// Set the prototype explicitly to maintain the correct prototype chain
+		// @see https://www.typescriptlang.org/docs/handbook/2/classes.html#extends-clauses
+		Object.setPrototypeOf(this, UnknownError.prototype);
 	}
 }

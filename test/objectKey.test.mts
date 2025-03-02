@@ -13,7 +13,7 @@ describe('object Key filtering', function () {
 		});
 
 		it('should filter with specific value', function () {
-			expect(includeKeys({foo: 'test'}, (key, value) => value === 'test').foo, 'test');
+			expect(includeKeys({foo: 'test'}, (key, value) => value === 'test').foo).to.be.eq('test');
 		});
 
 		it('should filter with object value', function () {
@@ -84,7 +84,7 @@ describe('object Key filtering', function () {
 		});
 
 		it('should filter with specific value', function () {
-			expect(excludeKeys({foo: 'test'}, (key, value) => value !== 'test').foo, 'test');
+			expect(excludeKeys({foo: 'test'}, (key, value) => value !== 'test').foo).to.be.eql('test');
 		});
 
 		it('should filter with specific object value', function () {
@@ -104,7 +104,7 @@ describe('object Key filtering', function () {
 
 		it('should drop non-enumerable properties', function () {
 			const input = Object.defineProperty({}, 'test', {value: true, enumerable: false});
-			expect((excludeKeys(input, () => false) as any).test, undefined);
+			expect((excludeKeys(input, () => false) as any).test).to.be.eql(undefined);
 		});
 
 		it('should keep property descriptors', function () {
@@ -131,7 +131,7 @@ describe('object Key filtering', function () {
 			};
 			const Child = class extends Parent {};
 			const input = new Child();
-			expect((excludeKeys(input, () => false) as any).test, undefined);
+			expect((excludeKeys(input, () => false) as any).test).to.be.eql(undefined);
 		});
 
 		it('should keep object  __proto__ keys', function () {

@@ -26,7 +26,7 @@ export function toError(error: unknown): Error | UnknownError {
 /**
  * Asserts that the given value is an Error.
  * @param error - Error to assert.
- * @throws If the given value is not an Error.
+ * @throws {TypeError} If the given value is not an instance of the `Error` class.
  * @see {@link toError}
  * @since v0.1.0
  * @example
@@ -41,4 +41,55 @@ export function assertError(error: unknown): asserts error is Error {
 	if (!(error instanceof Error)) {
 		throw toError(error);
 	}
+}
+
+function cloneErrorProperties<ET extends Error>(source: Error, target: ET): ET {
+	// copy cause if supported
+	if ('cause' in source) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+		(target as any).cause = source.cause;
+	}
+	// copy stack
+	target.stack = source.stack;
+	return target;
+}
+
+/**
+ * Wraps an error in a custom error type.
+ * @param error - The error to wrap.
+ * @param ErrorClass - The constructor of the error class to use.
+ * @returns An instance of the custom error type with the original message and stack trace.
+ * @template ET - The custom error type that extends Error.
+ * @example
+ * try {
+ *   // ...
+ * } catch (err) {
+ *   throw errorAs(err, TypeError); // throws TypeError
+ * }
+ * @since v0.3.0
+ */
+export function errorAs<ET extends Error>(error: unknown, ErrorClass: new (message?: string) => ET): ET {
+	const baseError = toError(error);
+	return cloneErrorProperties(baseError, new ErrorClass(baseError.message));
+}
+
+/**
+ * Wraps an error in a custom error type using a callback function.
+ * @param error - The original error or error message to wrap.
+ * @param callback - A function that takes an optional message and returns an instance of the custom error type.
+ * @returns An instance of the custom error type with the original message and stack trace.
+ * @template ET - The custom error type that extends Error.
+ * @example
+ * try {
+ *   // ...
+ * } catch (err) {
+ *   const customError = errorWith(err, (msg) => new CustomError(msg));
+ *   throw customError;
+ * }
+ * @since v0.3.0
+ */
+
+export function errorWith<ET extends Error>(error: unknown, callback: (message?: string) => ET): ET {
+	const baseError = toError(error);
+	return cloneErrorProperties(baseError, callback(baseError.message));
 }
