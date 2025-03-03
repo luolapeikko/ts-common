@@ -49,8 +49,8 @@ export type ObjectMappedArrayTuples<R extends Record<string | number | symbol, u
  * const result3: Array<[string, string]> = objectEntries<Record<string, string>>({key: 'value'});
  * const result4: [] = objectEntries({});
  * @template R - The object shape
- * @param value - The object shape to get the values from
- * @return {Array<[Key, Value]> | NonEmptyArray<[Key, Value]>} Array of tuples with key and value
+ * @param {R} value - The object shape to get the values from
+ * @returns {ObjectMappedArrayTuples<R>} Array of tuples with key and value
  * @since v0.2.0
  */
 export function objectEntries<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArrayTuples<R> {
@@ -65,8 +65,8 @@ export function objectEntries<R extends Record<string | number | symbol, unknown
  * const result3: Array<string> = objectKeys<Record<string, string>>({key: 'value'});
  * const result4: [] = objectKeys({});
  * @template R - The object shape
- * @param value - The object shape to get the values from
- * @returns {Array<Key> | NonEmptyReadonlyArray<Key>} Array of object keys
+ * @param {R} value - The object shape to get the values from
+ * @returns {ObjectMappedArray<R, keyof R>} Array of object keys
  * @since v0.2.0
  */
 export function objectKeys<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, keyof R> {
@@ -79,8 +79,8 @@ export function objectKeys<R extends Record<string | number | symbol, unknown>>(
  * const result2: Array<string> = objectValues({key: 'value'});
  * const result3: [] = objectValues({});
  * @template R - The object shape
- * @param value - The object shape to get the values from
- * @returns {Array<Value> | NonEmptyReadonlyArray<Value>} Array of object values
+ * @param {R} value - The object shape to get the values from
+ * @returns {ObjectMappedArray<R, R[keyof R]>} Array of object values
  * @since v0.2.0
  */
 export function objectValues<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
@@ -98,6 +98,11 @@ type KeyCallback<O extends Record<PropertyKey, any>, K extends keyof O> = (key: 
  * };
  * const newObject = includeKeys(object, (key, value, obj) => value === true); //=> {foo: true}
  * const newObject = includeKeys(object, ['bar']); //=> {bar: false}
+ * @template O - The object to filter and include keys from
+ * @template K - The key type
+ * @param {O} object - The object to filter and include keys from
+ * @param {Iterable<K> | KeyCallback<O, K>} keys - The keys or keysCallback to include from the object
+ * @returns {Partial<O>} A new object with the included keys
  * @since v0.2.8
  */
 export function includeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, keys: Iterable<K>): Pick<O, K>;
@@ -133,6 +138,11 @@ type DistributiveOmit<Value, Key extends PropertyKey> = Value extends unknown ? 
  * };
  * const newObject = excludeKeys(object, (key, value) => value === true); //=> {bar: false}
  * const newObject = excludeKeys(object, ['bar']); //=> {foo: true}
+ * @template O - The object to filter and exclude keys from
+ * @template K - The key type
+ * @param {O} object - The object to filter and exclude keys from
+ * @param {Iterable<K> | KeyCallback<O, K>} key - The keys or keysCallback to exclude from the object
+ * @returns {Partial<O>} A new object with the excluded keys
  * @since v0.2.8
  */
 export function excludeKeys<O extends Record<PropertyKey, any>, K extends keyof O>(object: O, key: Iterable<K>): DistributiveOmit<O, K>;

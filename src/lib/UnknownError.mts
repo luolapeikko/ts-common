@@ -1,3 +1,12 @@
+/**
+ * Builds an error message from an unknown error value.
+ * If the error is a string, it is wrapped in quotes.
+ * If the error is an Error instance, its message property is used.
+ * If the error is an object with a message string property, it is used.
+ * Otherwise, the error is JSON stringified.
+ * @param {unknown} unknownError - The unknown error value to wrap.
+ * @returns {string} A string describing the error.
+ */
 function buildUnknownMessage(unknownError: unknown): string {
 	if (typeof unknownError === 'string') {
 		return `Unknown error: "${unknownError}"`;
@@ -13,7 +22,7 @@ function buildUnknownMessage(unknownError: unknown): string {
 
 /**
  * Unknown error class, used to wrap unknown thrown errors.
- * @extends TypeError
+ * @augments TypeError
  * @see [toError](https://luolapeikko.github.io/ts-common/functions/toError.html)
  * @since v0.2.0
  * @example
@@ -28,7 +37,7 @@ export class UnknownError extends TypeError {
 	public readonly unknownError: unknown;
 	/**
 	 * Constructor for the UnknownError class.
-	 * @param unknownError - The unknown error value to wrap.
+	 * @param {unknown} unknownError - The unknown error value to wrap.
 	 */
 	constructor(unknownError: unknown) {
 		super(buildUnknownMessage(unknownError));

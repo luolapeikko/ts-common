@@ -1,6 +1,5 @@
 /**
  * A type that can be loaded directly, Promise or a function that returns the value or a Promise.
- *
  * @template T The type of the value that can be loaded (T can't be a function).
  * @since v0.0.1
  * @example

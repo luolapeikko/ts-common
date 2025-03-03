@@ -25,8 +25,9 @@ export type MapCallback<Target, Source extends AnyArrayType> = (value: Source[nu
  * const result2: NonEmptyReadonlyArray<'value'> = arrayMap<'value', typeof data>(data, (value) => value.value); // enforce output type
  * @template Target - The type of the array to map to
  * @template Source - The type of the array to map from
- * @param data - The array to map
- * @param callback - Callback function to map data from the array
+ * @param {Source} data - The array to map
+ * @param {MapCallback<Target, Source>} callback - Callback function to map data from the array
+ * @returns {AnyArrayType<Target>} Mapped array
  * @since v0.2.0
  */
 export function arrayMap<Target, Source extends NonEmptyArray<unknown> | NonEmptyReadonlyArray<unknown>>(
