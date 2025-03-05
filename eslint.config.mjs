@@ -1,52 +1,34 @@
-import {fixupConfigRules, fixupPluginRules} from '@eslint/compat';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 import stylisticTs from '@stylistic/eslint-plugin-ts';
-import _import from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import sonarjs from 'eslint-plugin-sonarjs';
 import tsParser from '@typescript-eslint/parser';
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
-import js from '@eslint/js';
-import {FlatCompat} from '@eslint/eslintrc';
-import jsdoc from 'eslint-plugin-jsdoc';
+import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
-});
-
-export default [
+export default tseslint.config(
+	eslint.configs.recommended,
+	tseslint.configs.recommendedTypeChecked,
+	tseslint.configs.stylisticTypeChecked,
+	importPlugin.flatConfigs.recommended,
+	importPlugin.flatConfigs.typescript,
 	sonarjs.configs.recommended,
+	cspellESLintPluginRecommended,
 	prettierRecommended,
-	jsdoc.configs['flat/recommended'],
 	{
 		ignores: ['**/dist', '**/node_modules', '**/.github', '**/.nyc_output', '**/vite.config.mts', 'eslint.config.mjs'],
 	},
-	...fixupConfigRules(
-		compat.extends(
-			'eslint:recommended',
-			'plugin:import/recommended',
-			'plugin:import/typescript',
-			'plugin:@typescript-eslint/eslint-recommended',
-			'plugin:@typescript-eslint/strict-type-checked',
-		),
-	),
 	{
 		plugins: {
-			'@typescript-eslint': fixupPluginRules(typescriptEslint),
 			'@stylistic/ts': stylisticTs,
-			import: fixupPluginRules(_import),
 		},
 		languageOptions: {
 			parser: tsParser,
 			ecmaVersion: 2020,
 			sourceType: 'module',
 			parserOptions: {
-				project: __dirname + '/tsconfig.test.json',
+				project: './tsconfig.test.json',
 			},
 		},
 		settings: {
@@ -128,6 +110,9 @@ export default [
 			'sonarjs/use-type-alias': 'off',
 			'@typescript-eslint/no-unsafe-function-type': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/consistent-indexed-object-style': 'off',
+			'@typescript-eslint/array-type': 'off',
+			'@typescript-eslint/consistent-type-definitions': 'off',
 		},
 	},
 	{
@@ -142,6 +127,7 @@ export default [
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-confusing-void-expression': 'off',
 			'@typescript-eslint/no-unsafe-member-access': 'off',
+			'@typescript-eslint/no-empty-function': 'off',
 		},
 	},
-];
+);
