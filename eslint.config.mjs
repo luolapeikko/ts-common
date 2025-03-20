@@ -55,10 +55,38 @@ export default tseslint.config(
 					'newlines-between': 'never',
 				},
 			],
+			camelcase: 'off',
+			'@typescript-eslint/naming-convention': [
+				'warn',
+				{
+					selector: ['variable', 'parameter'],
+					modifiers: ['destructured'],
+					format: null,
+				},
+				{
+					selector: 'variable',
+					modifiers: ['const'],
+					format: ['camelCase'],
+					leadingUnderscore: 'allow',
+				},
+				{
+					selector: 'variableLike',
+					format: ['camelCase', 'PascalCase'],
+					leadingUnderscore: 'allow',
+				},
+				{
+					selector: 'typeAlias',
+					format: ['PascalCase'],
+				},
+				{
+					selector: 'interface',
+					prefix: ['I'],
+					format: ['PascalCase'],
+				},
+			],
 			'import/no-useless-path-segments': 'warn',
 			'import/no-duplicates': 'error',
 			curly: 'error',
-			camelcase: 1,
 			'@typescript-eslint/no-this-alias': [
 				'warn',
 				{

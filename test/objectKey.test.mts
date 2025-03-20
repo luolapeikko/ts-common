@@ -60,10 +60,10 @@ describe('object Key filtering', function () {
 		});
 
 		it('should keep inherited properties', function () {
-			const Parent = class {
+			class Parent {
 				it() {}
-			};
-			const Child = class extends Parent {};
+			}
+			class Child extends Parent {}
 			const input = new Child();
 			expect(typeof includeKeys(input, () => true).it).to.be.eq('function');
 		});
@@ -126,10 +126,10 @@ describe('object Key filtering', function () {
 		});
 
 		it('should keep inherited properties', function () {
-			const Parent = class {
+			class Parent {
 				it() {}
-			};
-			const Child = class extends Parent {};
+			}
+			class Child extends Parent {}
 			const input = new Child();
 			expect((excludeKeys(input, () => false) as any).test).to.be.eql(undefined);
 		});
