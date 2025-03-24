@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import type {Loadable, ResolvedLoadable} from '../src/index.mjs';
+import type {Loadable, ResolvedLoadable} from './Loadable.mjs';
 
 const validLoadableValue = 'value';
 const validLoadablePromise = Promise.resolve('value');

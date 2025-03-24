@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {type Nullable, type Nullish} from '../src/index.mjs';
+import {type Nullable, type Nullish} from './Null.mjs';
 
 describe('Test Null types', function () {
 	describe('Nullish', function () {

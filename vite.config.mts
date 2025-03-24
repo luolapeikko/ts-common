@@ -11,12 +11,13 @@ export default defineConfig({
 		coverage: {
 			provider: 'v8',
 			include: ['src/**/*.mts'],
+			exclude: ['src/**/index.mts', 'src/**/*.test-d.mts'],
 			reporter: ['text'],
 		},
 		include: ['**/*.test.mts'],
 		typecheck: {
 			tsconfig: './tsconfig.test.json',
-			include: ['**/*.test-d.mts']
-		}
+			include: ['**/*.test-d.mts'],
+		},
 	},
 });

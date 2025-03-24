@@ -6,6 +6,7 @@ import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import sonarjs from 'eslint-plugin-sonarjs';
 import tsParser from '@typescript-eslint/parser';
 import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended';
+import jsdoc from 'eslint-plugin-jsdoc';
 
 export default tseslint.config(
 	eslint.configs.recommended,
@@ -15,6 +16,7 @@ export default tseslint.config(
 	importPlugin.flatConfigs.typescript,
 	sonarjs.configs.recommended,
 	cspellESLintPluginRecommended,
+	jsdoc.configs['flat/recommended-typescript'],
 	prettierRecommended,
 	{
 		ignores: ['**/dist', '**/node_modules', '**/.github', '**/.nyc_output', '**/vite.config.mts', 'eslint.config.mjs'],
@@ -22,6 +24,7 @@ export default tseslint.config(
 	{
 		plugins: {
 			'@stylistic/ts': stylisticTs,
+			jsdoc,
 		},
 		languageOptions: {
 			parser: tsParser,
@@ -38,11 +41,14 @@ export default tseslint.config(
 					moduleDirectory: ['node_modules', 'src/'],
 				},
 			},
+			jsdoc: {
+				mode: 'typescript',
+			},
 		},
 		rules: {
 			'sort-imports': 'off',
 			'import/order': [
-				'error',
+				'warn',
 				{
 					groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
 
@@ -141,6 +147,15 @@ export default tseslint.config(
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
 			'@typescript-eslint/array-type': 'off',
 			'@typescript-eslint/consistent-type-definitions': 'off',
+			'jsdoc/no-types': 'off',
+			'jsdoc/require-param-type': 'warn',
+			'jsdoc/require-param': 'warn',
+			'jsdoc/require-template': 'warn',
+			'jsdoc/require-throws': 'warn',
+			'jsdoc/require-returns': 'warn',
+			'jsdoc/require-returns-type': 'warn',
+			'jsdoc/check-values': 'error',
+			'jsdoc/check-types': 'error',
 		},
 	},
 	{

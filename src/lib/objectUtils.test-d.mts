@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {excludeKeys, includeKeys} from '../src/index.mjs';
+import {excludeKeys, includeKeys} from './objectUtils.mjs';
 
 const propertySymbol = Symbol('test');
 const object = {

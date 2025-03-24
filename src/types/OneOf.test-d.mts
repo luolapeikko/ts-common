@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {type OneOf} from '../src/index.mjs';
+import {type OneOf} from './OneOf.mjs';
 
 type Demo1 = {demo1: string};
 type Demo2 = {demo2: string};

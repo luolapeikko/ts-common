@@ -5,6 +5,7 @@
  * function demo(value: Nullish<string>) {
  *   // value: string | null | undefined
  * }
+ * @since v0.3.4
  */
 export type Nullish<T> = T | null | undefined;
 
@@ -15,5 +16,6 @@ export type Nullish<T> = T | null | undefined;
  * function demo(value: Nullable<string>) {
  *   // value: string | null
  * }
+ * @since v0.3.4
  */
 export type Nullable<T> = T | null;
