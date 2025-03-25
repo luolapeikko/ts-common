@@ -12,6 +12,9 @@ type OnlyFirst<F, S> = F & {[Key in keyof Omit<S, keyof F>]?: never};
  * @example
  * function test(data: OneOf<[{data1: string}, {data2: string}]>) {
  * }
+ * @template TypesArray - The array of types to combine
+ * @template Res - The result type
+ * @template AllProperties - The union of all properties
  * @since v0.2.6
  */
 export type OneOf<TypesArray extends any[], Res = never, AllProperties = MergeTypes<TypesArray>> = TypesArray extends [infer Head, ...infer Rem]

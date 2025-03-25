@@ -12,6 +12,7 @@ export default tseslint.config(
 	eslint.configs.recommended,
 	tseslint.configs.recommendedTypeChecked,
 	tseslint.configs.stylisticTypeChecked,
+	tseslint.configs.strictTypeChecked,
 	importPlugin.flatConfigs.recommended,
 	importPlugin.flatConfigs.typescript,
 	sonarjs.configs.recommended,
@@ -147,6 +148,7 @@ export default tseslint.config(
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
 			'@typescript-eslint/array-type': 'off',
 			'@typescript-eslint/consistent-type-definitions': 'off',
+			'@typescript-eslint/no-unnecessary-type-parameters': 'off', // not working ok atm
 			'jsdoc/no-types': 'off',
 			'jsdoc/require-param-type': 'warn',
 			'jsdoc/require-param': 'warn',
@@ -156,6 +158,18 @@ export default tseslint.config(
 			'jsdoc/require-returns-type': 'warn',
 			'jsdoc/check-values': 'error',
 			'jsdoc/check-types': 'error',
+			'jsdoc/no-restricted-syntax': [
+				'warn',
+				{
+					contexts: [
+						{
+							comment: 'JsdocBlock:not(*:has(JsdocTag[tag=since]))',
+							context: 'ExportNamedDeclaration',
+							message: '@since required on each block',
+						},
+					],
+				},
+			],
 		},
 	},
 	{

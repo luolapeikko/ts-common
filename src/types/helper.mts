@@ -1,9 +1,15 @@
 /**
+ * Support for conditional types
+ * @template X Object type
+ * @template Y Object type
+ * @template A Output object type or never
+ * @template B Output object type or never
  * @since v0.1.2
  */
 export type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
 
 /**
+ * @template T The object shape
  * @since v0.1.2
  */
 export type IfWritableKeys<T> = {
@@ -11,6 +17,7 @@ export type IfWritableKeys<T> = {
 }[keyof T];
 
 /**
+ * @template T The object shape
  * @since v0.1.2
  */
 export type IfReadonlyKeys<T> = {
