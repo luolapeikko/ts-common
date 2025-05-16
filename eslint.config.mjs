@@ -7,6 +7,7 @@ import sonarjs from 'eslint-plugin-sonarjs';
 import tsParser from '@typescript-eslint/parser';
 import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended';
 import jsdoc from 'eslint-plugin-jsdoc';
+import perfectionist from 'eslint-plugin-perfectionist';
 
 export default tseslint.config(
 	eslint.configs.recommended,
@@ -26,6 +27,7 @@ export default tseslint.config(
 		plugins: {
 			'@stylistic/ts': stylisticTs,
 			jsdoc,
+			perfectionist,
 		},
 		languageOptions: {
 			parser: tsParser,
@@ -168,6 +170,22 @@ export default tseslint.config(
 							message: '@since required on each block',
 						},
 					],
+				},
+			],
+			'perfectionist/sort-exports': [
+				'error',
+				{
+					type: 'alphabetical',
+					order: 'asc',
+					fallbackSort: {type: 'unsorted'},
+					ignoreCase: true,
+					specialCharacters: 'keep',
+					partitionByComment: false,
+					partitionByNewLine: false,
+					newlinesBetween: 'ignore',
+					groupKind: 'mixed',
+					groups: [],
+					customGroups: [],
 				},
 			],
 		},
