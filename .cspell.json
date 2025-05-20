@@ -16,7 +16,8 @@
 		"**/node_modules/**"
 	],
 	"words": [
-		"luolapeikko"
+		"luolapeikko",
+		"sonarjs"
 	],
 	"dictionaries": [
 		"typescript",

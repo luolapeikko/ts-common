@@ -6,3 +6,4 @@ export * from './NonEmptyArray.mjs';
 export * from './Null.mjs';
 export * from './object.mjs';
 export * from './OneOf.mjs';
+export * from './Prettify.mjs';

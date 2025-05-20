@@ -145,6 +145,7 @@ export default tseslint.config(
 			],
 			'@typescript-eslint/no-unnecessary-condition': 'off',
 			'sonarjs/use-type-alias': 'off',
+			'sonarjs/no-useless-intersection': 'off',
 			'@typescript-eslint/no-unsafe-function-type': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/consistent-indexed-object-style': 'off',
