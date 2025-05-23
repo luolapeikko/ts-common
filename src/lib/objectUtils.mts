@@ -38,12 +38,12 @@ export type ObjectMappedArrayTuples<R extends Record<string | number | symbol, u
 	: RecordHaveWritableKeys<R> extends never
 		? NonEmptyReadonlyArray<
 				{
-					[K in keyof R]: [K, R[K]];
+					[K in keyof R]-?: [K, Exclude<R[K], undefined>];
 				}[keyof R]
 			>
 		: Array<
 				{
-					[K in keyof R]: [K, R[K]];
+					[K in keyof R]-?: [K, Exclude<R[K], undefined>];
 				}[keyof R]
 			>;
 

@@ -64,6 +64,8 @@ describe('objectUtils', function () {
 			expect(_looseData).to.deep.equal([['key', 'value']]);
 			const _baseData: Array<[string, string]> = objectEntries<Record<string, string>>({key: 'value'});
 			expect(_baseData).to.deep.equal([['key', 'value']]);
+			const _optionalData: Array<['key', string | undefined]> = objectEntries<Partial<Record<'key', string>>>({key: 'value'});
+			expect(_optionalData).to.deep.equal([['key', 'value']]);
 			const _mixedData: Array<['key', 'value'] | ['normal', 'value2']> = objectEntries(demo);
 			expect(_mixedData).to.deep.equal([
 				['key', 'value'],
