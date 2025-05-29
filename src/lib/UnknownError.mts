@@ -2,24 +2,21 @@
  * Builds an error message from an unknown error value.
  * If the error is a string, it is wrapped in quotes.
  * If the error is an Error instance, its message property is used.
- * If the error is an object with a message string property, it is used.
  * Otherwise, the error is JSON stringified.
- * @param {unknown} unknownError - The unknown error value to wrap.
+ * @param {unknown} err - The unknown error value to wrap.
  * @returns {string} A string describing the error.
  */
-function buildUnknownMessage(unknownError: unknown): string {
-	if (typeof unknownError === 'string') {
-		return `Unknown error: "${unknownError}"`;
+function toMsg(err: unknown): string {
+	let msg: string;
+	if (typeof err === 'string') {
+		msg = `"${err}"`;
+	} else if (typeof err === 'object' && err !== null && 'message' in err && typeof err.message === 'string') {
+		msg = `"${err.message}"`;
+	} else {
+		msg = JSON.stringify(err);
 	}
-	if (unknownError instanceof Error) {
-		return `Unknown error: "${unknownError.message}"`;
-	}
-	if (typeof unknownError === 'object' && unknownError !== null && 'message' in unknownError && typeof unknownError.message === 'string') {
-		return `Unknown error: "${unknownError.message}"`;
-	}
-	return `Unknown error: ${JSON.stringify(unknownError)}`;
+	return `Unknown error: ${msg}`;
 }
-
 /**
  * Unknown error class, used to wrap unknown thrown errors.
  * @augments TypeError
@@ -37,16 +34,16 @@ export class UnknownError extends TypeError {
 	public readonly unknownError: unknown;
 	/**
 	 * Constructor for the UnknownError class.
-	 * @param {unknown} unknownError - The unknown error value to wrap.
+	 * @param {unknown} err - The unknown error value to wrap.
 	 */
-	constructor(unknownError: unknown) {
-		super(buildUnknownMessage(unknownError));
-		this.unknownError = unknownError;
+	constructor(err: unknown) {
+		super(toMsg(err));
+		this.unknownError = err;
 		this.name = 'UnknownError';
 		// try to copy some properties from the original object if exists
-		if (typeof unknownError === 'object' && unknownError !== null) {
-			this.stack = (unknownError as Error).stack;
-			this.name = (unknownError as Error).name || this.name;
+		if (typeof err === 'object' && err !== null) {
+			this.stack = (err as Error).stack;
+			this.name = (err as Error).name || this.name;
 		}
 		if (!this.stack) {
 			Error.captureStackTrace(this, this.constructor);

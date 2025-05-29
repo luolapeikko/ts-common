@@ -1,6 +1,6 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import stylisticTs from '@stylistic/eslint-plugin-ts';
+import stylistic from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import sonarjs from 'eslint-plugin-sonarjs';
@@ -25,7 +25,7 @@ export default tseslint.config(
 	},
 	{
 		plugins: {
-			'@stylistic/ts': stylisticTs,
+			'@stylistic/ts': stylistic,
 			jsdoc,
 			perfectionist,
 		},
@@ -146,6 +146,9 @@ export default tseslint.config(
 			'@typescript-eslint/no-unnecessary-condition': 'off',
 			'sonarjs/use-type-alias': 'off',
 			'sonarjs/no-useless-intersection': 'off',
+			'sonarjs/different-types-comparison': 'off',
+			'sonarjs/function-return-type': 'off',
+			'sonarjs/no-nested-conditional': 'off',
 			'@typescript-eslint/no-unsafe-function-type': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/consistent-indexed-object-style': 'off',

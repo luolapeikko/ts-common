@@ -2,7 +2,7 @@ import {UnknownError} from './UnknownError.mjs';
 
 /**
  * Get or create an error from the given value, if it's not an error, it will be wrapped in an UnknownError.
- * @param {unknown} error - Error instance or error message.
+ * @param {unknown} err - Error instance or error message.
  * @returns {Error | UnknownError} Error instance.
  * @see {@link UnknownError}
  * @since v0.1.0
@@ -13,19 +13,13 @@ import {UnknownError} from './UnknownError.mjs';
  *   console.log(toError(err).message);
  * }
  */
-export function toError(error: unknown): Error | UnknownError {
-	if (error instanceof Error) {
-		return error;
-	}
-	if (typeof error === 'string') {
-		return new Error(error);
-	}
-	return new UnknownError(error);
+export function toError(err: unknown): Error | UnknownError {
+	return err instanceof Error ? err : typeof err === 'string' ? new Error(err) : new UnknownError(err);
 }
 
 /**
  * Asserts that the given value is an Error.
- * @param {unknown} error - Error to assert.
+ * @param {unknown} err - Error to assert.
  * @throws {TypeError} If the given value is not an instance of the `Error` class.
  * @see {@link toError}
  * @since v0.1.0
@@ -37,9 +31,9 @@ export function toError(error: unknown): Error | UnknownError {
  *   console.log(err.message);
  * }
  */
-export function assertError(error: unknown): asserts error is Error {
-	if (!(error instanceof Error)) {
-		throw toError(error);
+export function assertError(err: unknown): asserts err is Error {
+	if (!(err instanceof Error)) {
+		throw toError(err);
 	}
 }
 
@@ -67,7 +61,7 @@ function cloneErrorProperties<ET extends Error>(source: Error, target: ET): ET {
 
 /**
  * Wraps an error in a custom error type.
- * @param {unknown} error - The error to wrap.
+ * @param {unknown} err - The error to wrap.
  * @param {new (message?: string) => ET} ErrorClass - The constructor of the error class to use.
  * @returns {ET} An instance of the custom error type with the original message and stack trace.
  * @template ET - The custom error type that extends Error.
@@ -79,14 +73,14 @@ function cloneErrorProperties<ET extends Error>(source: Error, target: ET): ET {
  * }
  * @since v0.3.0
  */
-export function errorAs<ET extends Error>(error: unknown, ErrorClass: new (message?: string) => ET): ET {
-	const baseError = toError(error);
+export function errorAs<ET extends Error>(err: unknown, ErrorClass: new (message?: string) => ET): ET {
+	const baseError = toError(err);
 	return cloneErrorProperties(baseError, new ErrorClass(baseError.message));
 }
 
 /**
  * Wraps an error in a custom error type using a callback function.
- * @param {unknown} error - The original error or error message to wrap.
+ * @param {unknown} err - The original error or error message to wrap.
  * @param {(message?: string) => ET} callback - A function that takes an optional message and returns an instance of the custom error type.
  * @returns {ET} An instance of the custom error type with the original message and stack trace.
  * @template ET - The custom error type that extends Error.
@@ -99,7 +93,7 @@ export function errorAs<ET extends Error>(error: unknown, ErrorClass: new (messa
  * }
  * @since v0.3.0
  */
-export function errorWith<ET extends Error>(error: unknown, callback: (message?: string) => ET): ET {
-	const baseError = toError(error);
+export function errorWith<ET extends Error>(err: unknown, callback: (message?: string) => ET): ET {
+	const baseError = toError(err);
 	return cloneErrorProperties(baseError, callback(baseError.message));
 }

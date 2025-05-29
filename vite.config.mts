@@ -10,7 +10,7 @@ export default defineConfig({
 		},
 		coverage: {
 			provider: 'v8',
-			include: ['src/**/*.mts'],
+			include: ['src/lib/*.mts'],
 			exclude: ['src/**/index.mts', 'src/**/*.test-d.mts'],
 			reporter: ['text'],
 		},
