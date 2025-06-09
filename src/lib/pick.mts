@@ -16,14 +16,14 @@
 export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(keys: Iterable<K>, value: T): Pick<T, K>;
 export function pick<K extends PropertyKey>(keys: Iterable<K>): <T extends Partial<Record<K, unknown>>>(value: T) => Pick<T, K>;
 export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(
-	...[keys, value]: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
+	...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
 ): Record<PropertyKey, unknown> | ((current: T) => Record<PropertyKey, unknown>) {
-	if (!value) {
-		return (current: T) => pick(keys, current);
+	if (args.length === 1) {
+		return (current: T) => pick(args[0], current);
 	}
 	const partial = {} as Record<PropertyKey, unknown>;
-	for (const key of keys) {
-		partial[key] = value[key];
+	for (const key of args[0]) {
+		partial[key] = args[1][key];
 	}
 	return partial;
 }
