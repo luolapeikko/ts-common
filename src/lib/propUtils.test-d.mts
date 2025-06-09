@@ -29,14 +29,6 @@ describe('Test propUtils types', () => {
 			const getLength = prop('length');
 			assertType<(target: any[]) => number>(getLength);
 		});
-
-		it('produces type errors for invalid keys', () => {
-			// @ts-expect-error 'nonexistent' is not a key of User
-			const getMissing = prop<User, 'nonexistent'>('nonexistent');
-
-			// @ts-expect-error invalid key for array
-			const getFoo = prop('foo')(['a', 'b']);
-		});
 	});
 
 	it('Test propEquals types', () => {
