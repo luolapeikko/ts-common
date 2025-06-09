@@ -7,6 +7,7 @@ describe('omit', function () {
 			const data = {demo: 'hello', value: null};
 			expect(omit(['value'], data)).to.eql({demo: 'hello'});
 			expect(omit(['demo'], data)).to.eql({value: null});
+			expect(() => omit(['demo'], null as any)).to.throw(TypeError, 'The second argument must be an object.');
 		});
 		it('should omit from map', function () {
 			const data = [{demo: 'hello', value: null}];
