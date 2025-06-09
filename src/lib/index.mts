@@ -5,6 +5,8 @@ export * from './loadableUtils.mjs';
 export * from './Nullable.mjs';
 export * from './Nullish.mjs';
 export * from './objectUtils.mjs';
+export * from './omit.mjs';
 export * from './pick.mjs';
+export * from './propUtils.mjs';
 export * from './Undef.mjs';
 export * from './UnknownError.mjs';
