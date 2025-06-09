@@ -8,11 +8,10 @@ describe('propUtils', () => {
 		role: 'admin' | 'user';
 		active?: boolean;
 	};
+	const user1: User = {id: 1, name: 'Alice', role: 'admin', active: true};
+	const user2: User = {id: 2, name: 'Bob', role: 'user'};
+	const users: User[] = [user1, user2, {id: 3, name: 'Carol', role: 'user', active: false}];
 	describe('prop', () => {
-		const user1: User = {id: 1, name: 'Alice', role: 'admin'};
-		const user2: User = {id: 2, name: 'Bob', role: 'user'};
-		const users: User[] = [user1, user2];
-
 		it('returns a function that extracts a property from an object', () => {
 			const getName = prop('name');
 			expect(getName(user1)).toBe('Alice');
@@ -22,7 +21,7 @@ describe('propUtils', () => {
 		it('can be used with Array.map', () => {
 			const getId = prop('id');
 			const ids = users.map(getId);
-			expect(ids).toEqual([1, 2]);
+			expect(ids).toEqual([1, 2, 3]);
 		});
 
 		it('works with arrays as target (index access)', () => {
@@ -33,11 +32,6 @@ describe('propUtils', () => {
 		});
 	});
 	describe('propEquals & propNotEquals', () => {
-		const users: User[] = [
-			{id: 1, name: 'Alice', role: 'admin', active: true},
-			{id: 2, name: 'Bob', role: 'user'},
-			{id: 3, name: 'Carol', role: 'user', active: false},
-		];
 		describe('propEquals', () => {
 			it('returns a predicate function', () => {
 				const predicate = propEquals('role', 'admin');
