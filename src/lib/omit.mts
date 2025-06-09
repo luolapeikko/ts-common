@@ -22,7 +22,7 @@ export function omit<K extends PropertyKey, T extends Partial<Record<K, unknown>
 		return (current: T) => omit(args[0], current);
 	}
 	if (!args[1] || typeof args[1] !== 'object' || Array.isArray(args[1])) {
-		throw new TypeError('The second argument must be an object.');
+		throw new TypeError('omit: The second argument must be an object.');
 	}
 	const partial = {...args[1]};
 	for (const key of args[0]) {
