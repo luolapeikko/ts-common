@@ -21,6 +21,9 @@ export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>
 	if (args.length === 1) {
 		return (current: T) => pick(args[0], current);
 	}
+	if (!args[1] || typeof args[1] !== 'object' || Array.isArray(args[1])) {
+		throw new TypeError('pick: The second argument must be an object.');
+	}
 	const partial = {} as Record<PropertyKey, unknown>;
 	for (const key of args[0]) {
 		partial[key] = args[1][key];

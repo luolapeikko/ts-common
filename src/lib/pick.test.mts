@@ -7,6 +7,7 @@ describe('pick', function () {
 			const data = {demo: 'hello', value: null};
 			expect(pick(['value'], data)).to.eql({value: null});
 			expect(pick(['demo'], data)).to.eql({demo: 'hello'});
+			expect(() => pick(['demo'], null as any)).to.throw(TypeError, 'The second argument must be an object.');
 		});
 		it('should pick from map', function () {
 			const data = [{demo: 'hello', value: null}];

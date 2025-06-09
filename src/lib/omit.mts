@@ -16,13 +16,16 @@
 export function omit<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(keys: Iterable<K>, data: T): Omit<T, K>;
 export function omit<K extends PropertyKey>(keys: Iterable<K>): <T extends Partial<Record<K, unknown>>>(value: T) => Omit<T, K>;
 export function omit<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(
-	...[keys, value]: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
+	...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
 ): Record<PropertyKey, unknown> | ((current: T) => Record<PropertyKey, unknown>) {
-	if (!value) {
-		return (current: T) => omit(keys, current);
+	if (args.length === 1) {
+		return (current: T) => omit(args[0], current);
 	}
-	const partial = {...value} as Record<PropertyKey, unknown>;
-	for (const key of keys) {
+	if (!args[1] || typeof args[1] !== 'object' || Array.isArray(args[1])) {
+		throw new TypeError('The second argument must be an object.');
+	}
+	const partial = {...args[1]};
+	for (const key of args[0]) {
 		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete partial[key];
 	}
