@@ -8,4 +8,5 @@ export * from './Nullish.mjs';
 export * from './object.mjs';
 export * from './OneOf.mjs';
 export * from './Prettify.mjs';
+export * from './promise.mjs';
 export * from './Undef.mjs';

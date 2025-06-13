@@ -23,7 +23,9 @@
 		"noUnusedLocals": true,
 		"esModuleInterop": true,
 		"noUncheckedIndexedAccess": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"erasableSyntaxOnly": true,
+		"isolatedDeclarations": true
 	},
 	"typedocOptions": {
 		"entryPoints": ["src/index.mts"],
