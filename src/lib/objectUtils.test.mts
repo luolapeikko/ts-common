@@ -125,8 +125,8 @@ describe('objectUtils', function () {
 
 		it('should keep property descriptors', function () {
 			const descriptor = {
-				get() {},
-				set() {},
+				get(): void {},
+				set(): void {},
 				enumerable: true,
 				configurable: false,
 			};
@@ -143,7 +143,7 @@ describe('objectUtils', function () {
 
 		it('should keep inherited properties', function () {
 			class Parent {
-				it() {}
+				it(): void {}
 			}
 			class Child extends Parent {}
 			const input = new Child();
@@ -191,8 +191,8 @@ describe('objectUtils', function () {
 
 		it('should keep property descriptors', function () {
 			const descriptor = {
-				get() {},
-				set() {},
+				get(): void {},
+				set(): void {},
 				enumerable: true,
 				configurable: false,
 			};
@@ -209,7 +209,7 @@ describe('objectUtils', function () {
 
 		it('should keep inherited properties', function () {
 			class Parent {
-				it() {}
+				it(): void {}
 			}
 			class Child extends Parent {}
 			const input = new Child();

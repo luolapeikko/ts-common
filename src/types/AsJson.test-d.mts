@@ -3,7 +3,7 @@ import {type AsJson} from './AsJson.mjs';
 
 const asJsonString = 'test';
 const asJsonObject = {test: 'test'};
-const asJsonFunction = {test: () => 'test'};
+const asJsonFunction = {test: (): string => 'test'};
 const asJsonUndefined = {test: undefined};
 const asJsonNull = {test: null};
 

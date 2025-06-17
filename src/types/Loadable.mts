@@ -3,7 +3,6 @@
  * @template T The type of the value that can be loaded (T can't be a function).
  * @since v0.0.1
  * @example
- * import {type Loadable, resolveLoadable} from '@luolapeikko/ts-common';
  * // example resolving a Loadable string
  * async function demo(loadable: Loadable<string>) {
  *   const value1: string = await (typeof loadable === 'function' ? loadable() : loadable);

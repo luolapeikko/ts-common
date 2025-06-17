@@ -3,8 +3,8 @@ import type {Loadable, ResolvedLoadable} from './Loadable.mjs';
 
 const validLoadableValue = 'value';
 const validLoadablePromise = Promise.resolve('value');
-const validLoadableCallback = () => 'value';
-const validLoadableCallbackPromise = () => Promise.resolve('value');
+const validLoadableCallback = (): string => 'value';
+const validLoadableCallbackPromise = (): Promise<string> => Promise.resolve('value');
 
 const validResolvedLoadableValue = 'value';
 const validResolvedLoadablePromise = Promise.resolve('value');

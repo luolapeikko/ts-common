@@ -51,7 +51,7 @@ export function propEquals<T extends Record<PropertyKey, any>, K extends keyof T
 export function propEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
 export function propEquals(key: any, value: any) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	return (obj: any) => obj[key] === value;
+	return (obj: any): boolean => obj[key] === value;
 }
 
 /**
@@ -84,5 +84,5 @@ export function propNotEquals<T extends Record<PropertyKey, any>, K extends keyo
 export function propNotEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
 export function propNotEquals(key: any, value: any) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	return (obj: any) => obj[key] !== value;
+	return (obj: any): boolean => obj[key] !== value;
 }
