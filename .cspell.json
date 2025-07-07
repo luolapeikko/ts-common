@@ -16,6 +16,7 @@
 		"**/node_modules/**"
 	],
 	"words": [
+		"iterability",
 		"luolapeikko",
 		"sonarjs",
 		"tuple"
