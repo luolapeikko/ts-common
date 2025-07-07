@@ -9,5 +9,6 @@ export * from './objectUtils.mjs';
 export * from './omit.mjs';
 export * from './pick.mjs';
 export * from './propUtils.mjs';
+export * from './recordUtils.mjs';
 export * from './Undef.mjs';
 export * from './UnknownError.mjs';
