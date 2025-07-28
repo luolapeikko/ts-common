@@ -20,6 +20,7 @@ describe('Test NumberCore functions', function () {
 			expect(() => NumberCore.assertInt(undefined)).to.throw(TypeError, 'Invalid integer: undefined');
 			expect(() => NumberCore.assertInt('test')).to.throw(TypeError, 'Invalid integer: "test"');
 			expect(() => NumberCore.assertInt({} as any)).to.throw(TypeError, 'Invalid integer: {}');
+			expect(() => NumberCore.assertInt(NaN)).to.throw(TypeError, 'Invalid integer: NaN');
 		});
 	});
 	describe('Test NumberCore.floatFrom function', function () {
@@ -40,6 +41,7 @@ describe('Test NumberCore functions', function () {
 			expect(() => NumberCore.assertFloat(undefined)).to.throw(TypeError, 'Invalid float: undefined');
 			expect(() => NumberCore.assertFloat('test')).to.throw(TypeError, 'Invalid float: "test"');
 			expect(() => NumberCore.assertFloat({} as any)).to.throw(TypeError, 'Invalid float: {}');
+			expect(() => NumberCore.assertFloat(NaN)).to.throw(TypeError, 'Invalid float: NaN');
 		});
 	});
 });

@@ -102,6 +102,9 @@ export class NumberCore {
 	 * @since v1.0.0
 	 */
 	public static buildFloatErr(value: unknown): TypeError {
+		if (typeof value === 'number' && isNaN(value)) {
+			return new TypeError(`Invalid float: NaN`);
+		}
 		return new TypeError(`Invalid float: ${JSON.stringify(value)}`);
 	}
 
@@ -112,6 +115,9 @@ export class NumberCore {
 	 * @since v1.0.0
 	 */
 	public static buildIntErr(value: unknown): TypeError {
+		if (typeof value === 'number' && isNaN(value)) {
+			return new TypeError(`Invalid integer: NaN`);
+		}
 		return new TypeError(`Invalid integer: ${JSON.stringify(value)}`);
 	}
 
