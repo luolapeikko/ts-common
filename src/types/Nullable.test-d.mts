@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {isNotNull, isNull} from '../lib/Nullable.mjs';
+import {UndefCore as U} from '../lib/UndefCore.mjs';
 import {type Nullable} from './Nullable.mjs';
 
 describe('Test Null types', function () {
@@ -18,14 +18,14 @@ describe('Test Null types', function () {
 	describe('null checks', function () {
 		it('isNotNull', function () {
 			const value = 'test' as Nullable<string>;
-			if (!isNotNull(value)) {
+			if (!U.isNotNull(value)) {
 				throw new Error('value should not be null');
 			}
 			assertType<string>(value);
 		});
 		it('isNull', function () {
 			const value = 'test' as Nullable<string>;
-			if (isNull(value)) {
+			if (U.isNull(value)) {
 				throw new Error('value should not be null');
 			}
 			assertType<string>(value);

@@ -1,7 +1,17 @@
 import {describe, expect, it} from 'vitest';
 import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
-import {arrayMap} from './arrayMapUtils.mjs';
-import {excludeKeys, includeKeys, objectEntries, objectKeys, objectValues} from './objectUtils.mjs';
+import {arrayMap} from './ArrayCore.mjs';
+import {excludeKeys, includeKeys, objectEntries, objectKeys, objectValues, omit, pick, prop, propEquals, propNotEquals} from './RecordCore.mjs';
+
+type User = {
+	id: number;
+	name: string;
+	role: 'admin' | 'user';
+	active?: boolean;
+};
+const user1: User = {id: 1, name: 'Alice', role: 'admin', active: true};
+const user2: User = {id: 2, name: 'Bob', role: 'user'};
+const users: User[] = [user1, user2, {id: 3, name: 'Carol', role: 'user', active: false}];
 
 const mapTest = {
 	key: {
@@ -19,16 +29,133 @@ const demo: MixedType = {
 	normal: 'value2',
 };
 
-describe('objectUtils', function () {
+describe('propUtils', () => {
+	describe('prop', () => {
+		it('returns a function that extracts a property from an object', () => {
+			const getName = prop('name');
+			expect(getName(user1)).toBe('Alice');
+			expect(getName(user2)).toBe('Bob');
+		});
+
+		it('can be used with Array.map', () => {
+			const getId = prop('id');
+			const ids = users.map(getId);
+			expect(ids).toEqual([1, 2, 3]);
+		});
+
+		it('works with arrays as target (index access)', () => {
+			const getFirst = prop(0);
+			expect(getFirst(['a', 'b', 'c'])).toBe('a');
+			const getSecond = prop(1);
+			expect(getSecond(['x', 'y', 'z'])).toBe('y');
+		});
+	});
+	describe('propEquals & propNotEquals', () => {
+		describe('propEquals', () => {
+			it('returns a predicate function', () => {
+				const predicate = propEquals('role', 'admin');
+				expect(typeof predicate).toBe('function');
+			});
+
+			it('correctly filters matching values', () => {
+				const isAdmin = propEquals('role', 'admin');
+				const result = users.filter(isAdmin);
+				expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
+			});
+
+			it('handles optional properties', () => {
+				const isActive = propEquals('active', true);
+				const result = users.filter(isActive);
+				expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
+			});
+
+			it('returns an empty array when no match is found', () => {
+				const hasNameDave = propEquals('name', 'Dave');
+				const result = users.filter(hasNameDave);
+				expect(result).toEqual([]);
+			});
+
+			it('works with loosely typed records', () => {
+				const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
+				const isX = propEquals('type', 'x');
+				const result = objects.filter(isX);
+				expect(result).toEqual([{type: 'x'}]);
+			});
+		});
+
+		describe('propNotEquals', () => {
+			it('returns a predicate function', () => {
+				const predicate = propNotEquals('role', 'admin');
+				expect(typeof predicate).toBe('function');
+			});
+
+			it('correctly filters objects where the property does not match', () => {
+				const isNotAdmin = propNotEquals('role', 'admin');
+				const result = users.filter(isNotAdmin);
+				expect(result).toEqual([
+					{id: 2, name: 'Bob', role: 'user'},
+					{id: 3, name: 'Carol', role: 'user', active: false},
+				]);
+			});
+
+			it('handles optional properties', () => {
+				const isNotActive = propNotEquals('active', true);
+				const result = users.filter(isNotActive);
+				expect(result).toEqual([
+					{id: 2, name: 'Bob', role: 'user'},
+					{id: 3, name: 'Carol', role: 'user', active: false},
+				]);
+			});
+
+			it('returns all objects when no property matches the value', () => {
+				const notNamedDave = propNotEquals('name', 'Dave');
+				const result = users.filter(notNamedDave);
+				expect(result).toEqual(users);
+			});
+
+			it('works with loosely typed records', () => {
+				const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
+				const isNotX = propNotEquals('type', 'x');
+				const result = objects.filter(isNotX);
+				expect(result).toEqual([{}, {type: 'y'}]);
+			});
+		});
+	});
+	describe('pick from object', function () {
+		it('should pick value', function () {
+			const data = {demo: 'hello', value: null};
+			expect(pick(['value'], data)).to.eql({value: null});
+			expect(pick(['demo'], data)).to.eql({demo: 'hello'});
+			expect(() => pick(['demo'], null as any)).to.throw(TypeError, 'The second argument must be an object.');
+		});
+		it('should pick from map', function () {
+			const data = [{demo: 'hello', value: null}];
+			expect(data.map(pick(['value']))).to.eql([{value: null}]);
+			expect(data.map(pick(['demo']))).to.eql([{demo: 'hello'}]);
+		});
+	});
+	describe('omit from object', function () {
+		it('should omit value', function () {
+			const data = {demo: 'hello', value: null};
+			expect(omit(['value'], data)).to.eql({demo: 'hello'});
+			expect(omit(['demo'], data)).to.eql({value: null});
+			expect(() => omit(['demo'], null as any)).to.throw(TypeError, 'The second argument must be an object.');
+		});
+		it('should omit from map', function () {
+			const data = [{demo: 'hello', value: null}];
+			expect(data.map(omit(['value']))).to.eql([{demo: 'hello'}]);
+			expect(data.map(omit(['demo']))).to.eql([{value: null}]);
+		});
+	});
 	describe('objectKeys', function () {
 		it('should have valid key array types', function () {
 			const _constData: NonEmptyReadonlyArray<'key'> = objectKeys({key: 'value'} as const);
 			expect(_constData).to.deep.equal(['key']);
-			const _looseData: Array<'key'> = objectKeys({key: 'value'});
+			const _looseData: 'key'[] = objectKeys({key: 'value'});
 			expect(_looseData).to.deep.equal(['key']);
-			const _baseData: Array<string> = objectKeys<Record<string, string>>({key: 'value'});
+			const _baseData: string[] = objectKeys<Record<string, string>>({key: 'value'});
 			expect(_baseData).to.deep.equal(['key']);
-			const _mixedData: Array<'key' | 'normal'> = objectKeys(demo);
+			const _mixedData: ('key' | 'normal')[] = objectKeys(demo);
 			expect(_mixedData).to.deep.equal(['key', 'normal']);
 			const _neverData: [] = objectKeys({});
 			expect(_neverData).to.deep.equal([]);
@@ -38,11 +165,11 @@ describe('objectUtils', function () {
 		it('should have valid value array types', function () {
 			const _constData: NonEmptyReadonlyArray<'value'> = objectValues({key: 'value'} as const);
 			expect(_constData).to.deep.equal(['value']);
-			const _looseData: Array<string> = objectValues({key: 'value'});
+			const _looseData: string[] = objectValues({key: 'value'});
 			expect(_looseData).to.deep.equal(['value']);
-			const _baseData: Array<string> = objectValues<Record<string, string>>({key: 'value'});
+			const _baseData: string[] = objectValues<Record<string, string>>({key: 'value'});
 			expect(_baseData).to.deep.equal(['value']);
-			const _mixedData: Array<'value' | 'value2'> = objectValues(demo);
+			const _mixedData: ('value' | 'value2')[] = objectValues(demo);
 			expect(_mixedData).to.deep.equal(['value', 'value2']);
 			const _neverData: [] = objectValues({});
 			expect(_neverData).to.deep.equal([]);
@@ -60,13 +187,13 @@ describe('objectUtils', function () {
 				['key', 'value'],
 				['key2', 'value2'],
 			]);
-			const _looseData: Array<['key', string]> = objectEntries({key: 'value'});
+			const _looseData: ['key', string][] = objectEntries({key: 'value'});
 			expect(_looseData).to.deep.equal([['key', 'value']]);
-			const _baseData: Array<[string, string]> = objectEntries<Record<string, string>>({key: 'value'});
+			const _baseData: [string, string][] = objectEntries<Record<string, string>>({key: 'value'});
 			expect(_baseData).to.deep.equal([['key', 'value']]);
-			const _optionalData: Array<['key', string | undefined]> = objectEntries<Partial<Record<'key', string>>>({key: 'value'});
+			const _optionalData: ['key', string | undefined][] = objectEntries<Partial<Record<'key', string>>>({key: 'value'});
 			expect(_optionalData).to.deep.equal([['key', 'value']]);
-			const _mixedData: Array<['key', 'value'] | ['normal', 'value2']> = objectEntries(demo);
+			const _mixedData: (['key', 'value'] | ['normal', 'value2'])[] = objectEntries(demo);
 			expect(_mixedData).to.deep.equal([
 				['key', 'value'],
 				['normal', 'value2'],

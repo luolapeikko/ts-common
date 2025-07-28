@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {isNotNullish, isNullish} from '../lib/Nullish.mjs';
+import {UndefCore as U} from '../lib/UndefCore.mjs';
 import {type Nullish} from './Nullish.mjs';
 
 describe('Test Nullish types', function () {
@@ -17,14 +17,14 @@ describe('Test Nullish types', function () {
 	describe('Test Nullish type guards', function () {
 		it('isNotNull', function () {
 			const value = 'test' as Nullish<string>;
-			if (!isNotNullish(value)) {
+			if (!U.isNotNullish(value)) {
 				throw new Error('value should not be undefined');
 			}
 			assertType<string>(value);
 		});
 		it('isNull', function () {
 			const value = 'test' as Nullish<string>;
-			if (isNullish(value)) {
+			if (U.isNullish(value)) {
 				throw new Error('value should not be undefined');
 			}
 			assertType<string>(value);

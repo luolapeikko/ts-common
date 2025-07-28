@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-useless-intersection */
 /**
  * Prettifies a type.
  * @template T The type to prettify.

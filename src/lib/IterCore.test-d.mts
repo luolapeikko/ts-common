@@ -1,53 +1,53 @@
 import {assertType, describe, it} from 'vitest';
-import {isAsyncIterable, isIterable, isNotAsyncIterable, isNotIterable} from './iterable.mjs';
+import {IterCore as I} from './IterCore.mjs';
 
 describe('iterableUtils', () => {
 	describe('isIterable', () => {
 		it('should narrow type to Iterable for iterable types', () => {
 			const arr: number[] | null = [1, 2, 3];
-			if (isIterable(arr)) {
+			if (I.isIterable(arr)) {
 				assertType<Iterable<number>>(arr);
 			}
 			const str: string | null = 'abc';
-			if (isIterable(str)) {
+			if (I.isIterable(str)) {
 				assertType<Iterable<string>>(str);
 			}
 			const map: Map<string, number> | null = new Map();
-			if (isIterable(map)) {
+			if (I.isIterable(map)) {
 				assertType<Iterable<[string, number]>>(map);
 			}
 			const set: Set<number> | null = new Set<number>();
-			if (isIterable(set)) {
+			if (I.isIterable(set)) {
 				assertType<Iterable<number>>(set);
 			}
 			function* generator(): Generator<number> {
 				yield 1;
 			}
 			const gen = generator();
-			if (isIterable(gen)) {
+			if (I.isIterable(gen)) {
 				assertType<Iterable<number>>(gen);
 			}
 		});
 		describe('isNotIterable', () => {
 			it('should narrow non-iterable types', () => {
 				const obj: Iterable<unknown> | {} = {};
-				if (isNotIterable(obj)) {
+				if (I.isNotIterable(obj)) {
 					assertType<{}>(obj);
 				}
 				const num: Iterable<unknown> | number = 123;
-				if (isNotIterable(num)) {
+				if (I.isNotIterable(num)) {
 					assertType<number>(num);
 				}
 				const bool: Iterable<unknown> | boolean = true;
-				if (isNotIterable(bool)) {
+				if (I.isNotIterable(bool)) {
 					assertType<boolean>(bool);
 				}
 				const nul: Iterable<unknown> | null = null;
-				if (isNotIterable(nul)) {
+				if (I.isNotIterable(nul)) {
 					assertType<null>(nul);
 				}
 				const undef: Iterable<unknown> | undefined = undefined;
-				if (isNotIterable(undef)) {
+				if (I.isNotIterable(undef)) {
 					// Should not enter this block, type remains undefined
 					assertType<undefined>(undef);
 				}
@@ -60,7 +60,7 @@ describe('iterableUtils', () => {
 				yield 1;
 			}
 			const asyncGen: AsyncGenerator<number, any, any> | null = asyncGenerator();
-			if (isAsyncIterable(asyncGen)) {
+			if (I.isAsyncIterable(asyncGen)) {
 				assertType<AsyncIterable<number>>(asyncGen);
 			}
 		});
@@ -68,23 +68,23 @@ describe('iterableUtils', () => {
 	describe('isNotAsyncIterable', () => {
 		it('should narrow non-async iterable types', () => {
 			const obj: AsyncIterable<unknown> | {} = {};
-			if (isNotAsyncIterable(obj)) {
+			if (I.isNotAsyncIterable(obj)) {
 				assertType<{}>(obj);
 			}
 			const num: AsyncIterable<unknown> | number = 123;
-			if (isNotAsyncIterable(num)) {
+			if (I.isNotAsyncIterable(num)) {
 				assertType<number>(num);
 			}
 			const bool: AsyncIterable<unknown> | boolean = true;
-			if (isNotAsyncIterable(bool)) {
+			if (I.isNotAsyncIterable(bool)) {
 				assertType<boolean>(bool);
 			}
 			const nul: AsyncIterable<unknown> | null = null;
-			if (isNotAsyncIterable(nul)) {
+			if (I.isNotAsyncIterable(nul)) {
 				assertType<null>(nul);
 			}
 			const undef: AsyncIterable<unknown> | undefined = undefined;
-			if (isNotAsyncIterable(undef)) {
+			if (I.isNotAsyncIterable(undef)) {
 				// Should not enter this block, type remains undefined
 				assertType<undefined>(undef);
 			}

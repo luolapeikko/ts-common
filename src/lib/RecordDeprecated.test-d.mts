@@ -1,5 +1,16 @@
-import {assertType, describe, it} from 'vitest';
-import {excludeKeys, includeKeys} from './objectUtils.mjs';
+import {assertType, describe, expect, it} from 'vitest';
+import {excludeKeys, includeKeys, omit, pick, prop, propEquals, propNotEquals} from './RecordCore.mjs';
+
+type Data = {demo: string; value: number | null};
+type User = {
+	id: number;
+	name: string;
+	role: 'admin' | 'user';
+	active?: boolean;
+};
+const user1: User = {id: 1, name: 'Alice', role: 'admin'};
+const user2: User = {id: 2, name: 'Bob', role: 'user'};
+const users: User[] = [user1, user2];
 
 const propertySymbol = Symbol('test');
 const object = {
@@ -8,7 +19,62 @@ const object = {
 	[propertySymbol]: true,
 };
 
-describe('object Key filtering', function () {
+describe('Test propUtils types', () => {
+	describe('Test prop types', () => {
+		it('infers types strictly with generic <T, K>', () => {
+			const getRole = prop<User, 'role'>('role');
+			assertType<(target: User) => 'admin' | 'user'>(getRole);
+			const user = users[0];
+			if (!user) {
+				return;
+			}
+			expect(getRole(user)).toBe('admin');
+		});
+
+		it('infers key type correctly in curried generic version', () => {
+			const getId = prop('id');
+			assertType<(target: {id: number}) => number>(getId);
+
+			const getLength = prop('length');
+			assertType<(target: any[]) => number>(getLength);
+		});
+	});
+	describe('Test propEquals types', () => {
+		it('Test propEquals types', () => {
+			const fn = propEquals<User, 'role'>('role', 'user');
+			assertType<(obj: User) => boolean>(fn);
+			const looseFn = propEquals('active', true);
+			assertType<(obj: {active?: boolean}) => boolean>(looseFn);
+		});
+	});
+	describe('Test propNotEquals types', () => {
+		it('Test propNotEquals types', () => {
+			const fn = propNotEquals<User, 'role'>('role', 'user');
+			assertType<(obj: User) => boolean>(fn);
+			const looseFn = propNotEquals('active', true);
+			assertType<(obj: {active?: boolean}) => boolean>(looseFn);
+		});
+	});
+	describe('pick from object', function () {
+		it('should pick value', function () {
+			const data: Data = {demo: 'hello', value: null};
+			assertType<Pick<Data, 'value'>>(pick(['value'], data));
+		});
+		it('should pick from map', function () {
+			const dataArray: Data[] = [{demo: 'hello', value: null}];
+			assertType<Pick<Data, 'demo'>[]>(dataArray.map(pick(['demo'])));
+		});
+	});
+	describe('omit from object', function () {
+		it('should omit value', function () {
+			const data: Data = {demo: 'hello', value: null};
+			assertType<Omit<Data, 'value'>>(omit(['value'], data));
+		});
+		it('should omit from map', function () {
+			const dataArray: Data[] = [{demo: 'hello', value: null}];
+			assertType<Omit<Data, 'demo'>[]>(dataArray.map(omit(['demo'])));
+		});
+	});
 	describe('includeKeys Types', function () {
 		it('should assert valid includeKeys types', function () {
 			assertType<Partial<typeof object>>(

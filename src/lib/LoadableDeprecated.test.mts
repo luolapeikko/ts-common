@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import {type Loadable} from '../types/Loadable.mjs';
-import {resolveLoadable} from './loadableUtils.mjs';
+import {resolveLoadable} from './LoadableCore.mjs';
 
 describe('loadableUtils', function () {
 	describe('resolveLoadable', function () {

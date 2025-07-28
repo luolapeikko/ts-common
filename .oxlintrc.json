@@ -124,8 +124,6 @@
 			"rules": {
 				"no-console": "off",
 				"no-proto": "off",
-				"sonarjs/no-duplicate-string": "off",
-				"sonarjs/assertions-in-tests": "off",
 				"@typescript-eslint/no-unsafe-argument": "off",
 				"@typescript-eslint/no-unsafe-assignment": "off",
 				"@typescript-eslint/no-explicit-any": "off",
