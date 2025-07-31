@@ -4,5 +4,6 @@ export * from './IterCore.mjs';
 export * from './LoadableCore.mjs';
 export * from './NumberCore.mjs';
 export * from './RecordCore.mjs';
+export * from './StringCore.mjs';
 export * from './UndefCore.mjs';
 export * from './UnknownError.mjs';
