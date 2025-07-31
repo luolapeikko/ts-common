@@ -49,7 +49,7 @@ export class RecordCore {
 	 * @returns {ObjectMappedArray<R, keyof R>} Array of object keys
 	 * @since v1.0.0
 	 */
-	public static keys<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, keyof R> {
+	public static keys<R extends object>(value: R): ObjectMappedArray<R, keyof R> {
 		return Object.keys(value) as ObjectMappedArray<R, keyof R>;
 	}
 
@@ -64,7 +64,7 @@ export class RecordCore {
 	 * @returns {ObjectMappedArray<R, R[keyof R]>} Array of object values
 	 * @since v1.0.0
 	 */
-	public static values<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
+	public static values<R extends object>(value: R): ObjectMappedArray<R, R[keyof R]> {
 		return Object.values(value) as ObjectMappedArray<R, R[keyof R]>;
 	}
 
@@ -80,7 +80,7 @@ export class RecordCore {
 	 * @returns {ObjectMappedArrayTuples<R>} Array of tuples with key and value
 	 * @since v1.0.0
 	 */
-	public static entries<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArrayTuples<R> {
+	public static entries<R extends object>(value: R): ObjectMappedArrayTuples<R> {
 		return Object.entries(value) as ObjectMappedArrayTuples<R>;
 	}
 

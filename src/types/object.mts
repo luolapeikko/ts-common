@@ -6,14 +6,14 @@ import {type NonEmptyReadonlyArray} from './NonEmptyArray.mjs';
  * @template R - The object shape
  * @since v0.1.2
  */
-export type RecordHaveReadonlyKeys<R extends Record<string | number | symbol, unknown>> = IfReadonlyKeys<R> extends never ? never : R;
+export type RecordHaveReadonlyKeys<R extends object> = IfReadonlyKeys<R> extends never ? never : R;
 
 /**
  * Check if a record is non-readonly or never
  * @template R - The object shape
  * @since v0.1.2
  */
-export type RecordHaveWritableKeys<R extends Record<string | number | symbol, unknown>> = IfWritableKeys<R> extends never ? never : R;
+export type RecordHaveWritableKeys<R extends object> = IfWritableKeys<R> extends never ? never : R;
 
 /**
  * Type for an empty object
@@ -31,11 +31,7 @@ export type EmptyObject = Record<string | number | symbol, never>;
  * @template T - The type of the values
  * @since v0.2.0
  */
-export type ObjectMappedArray<R extends Record<string | number | symbol, unknown>, T> = R extends EmptyObject
-	? []
-	: RecordHaveWritableKeys<R> extends never
-		? NonEmptyReadonlyArray<T>
-		: T[];
+export type ObjectMappedArray<R extends object, T> = R extends EmptyObject ? [] : RecordHaveWritableKeys<R> extends never ? NonEmptyReadonlyArray<T> : T[];
 
 /**
  * Type mapping for Object.entries as an array of tuples
@@ -47,7 +43,7 @@ export type ObjectMappedArray<R extends Record<string | number | symbol, unknown
  * @template T - The type of the values
  * @since v0.2.5
  */
-export type ObjectMappedArrayTuples<R extends Record<string | number | symbol, unknown>> = R extends EmptyObject
+export type ObjectMappedArrayTuples<R extends object> = R extends EmptyObject
 	? []
 	: RecordHaveWritableKeys<R> extends never
 		? NonEmptyReadonlyArray<

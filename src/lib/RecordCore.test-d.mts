@@ -133,4 +133,34 @@ describe('object Key filtering', function () {
 			assertType(excludeKeys(object, ['baz']));
 		});
 	});
+	describe('entries Types', function () {
+		it('should assert valid entries types', function () {
+			const entries = R.entries(object);
+			assertType<(['bar', number] | ['foo', string] | [typeof propertySymbol, boolean])[]>(entries);
+		});
+		it('should assert invalid entries types', function () {
+			// @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'object'.
+			R.entries('test');
+		});
+	});
+	describe('values Types', function () {
+		it('should assert valid values types', function () {
+			const values = R.values(object);
+			assertType<(string | number | boolean)[]>(values);
+		});
+		it('should assert invalid values types', function () {
+			// @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'object'.
+			R.values('test');
+		});
+	});
+	describe('keys Types', function () {
+		it('should assert valid keys types', function () {
+			const keys = R.keys(object);
+			assertType<('bar' | 'foo' | typeof propertySymbol)[]>(keys);
+		});
+		it('should assert invalid keys types', function () {
+			// @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'object'.
+			R.keys('test');
+		});
+	});
 });
