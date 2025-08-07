@@ -6,7 +6,7 @@ import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyA
  * @template T - The type of the array
  * @since v0.2.0
  */
-export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | T[];
+export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | T[] | readonly T[];
 
 /**
  * Array map callback function
@@ -18,6 +18,8 @@ export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray
  * @since v0.2.0
  */
 export type MapCallback<Target, Source extends AnyArrayType> = (value: Source[number], index: number, array: readonly Source[number][]) => Target;
+
+export type MapCallback2<Target, Source> = (value: Source, index: number, array: readonly Source[]) => Target;
 
 /**
  * Array core functions
@@ -74,7 +76,7 @@ export class ArrayCore {
 		data: Source,
 		callback: MapCallback<Target, Source>,
 	): NonEmptyArray<Target>;
-	public static map<Target, Source extends unknown[]>(data: Source, callback: MapCallback<Target, Source>): Target[];
+	public static map<Target, Source extends unknown[] | readonly unknown[]>(data: Source, callback: MapCallback<Target, Source>): Target[];
 	public static map<Target, Source extends AnyArrayType>(data: Source, callback: MapCallback<Target, Source>): AnyArrayType<Target> {
 		return data.map(callback);
 	}

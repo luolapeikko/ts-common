@@ -107,6 +107,9 @@ describe('ArrayCore', () => {
 	});
 	describe('objectKeys', function () {
 		it('should have valid array map types', function () {
+			const _staticKeys: readonly ('value1' | 'value2' | 'value3')[] = ['value1', 'value2', 'value3'] as const;
+			const _readonlyBase = A.map(_staticKeys, (value) => ({value}));
+			expect(_readonlyBase).to.deep.equal([{value: 'value1'}, {value: 'value2'}, {value: 'value3'}]);
 			const _constData: NonEmptyArray<'value'> = A.map([{value: 'value'}] as const, (value) => value.value);
 			expect(_constData).to.deep.equal(['value']);
 			const _constValueData: NonEmptyArray<string> = A.map([looseValue] as const, (value) => value.value);

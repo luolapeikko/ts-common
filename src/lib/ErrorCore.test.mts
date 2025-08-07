@@ -29,6 +29,8 @@ describe('errorUtils', function () {
 			expect(E.as(test, TypeError).stack).to.equal(test.stack);
 			expect(E.as(test, TypeError).name).to.equal('TypeError');
 			expect(E.as(test, UnknownError).name).to.equal('UnknownError');
+			expect(E.as(test, TypeError, 'new message').message).to.equal('new message');
+			expect(E.as(test, TypeError, (msg) => `custom message: ${msg}`).message).to.equal('custom message: test');
 		});
 		it('should copy error cause', function () {
 			const errorCause = new Error('cause');
@@ -54,6 +56,22 @@ describe('errorUtils', function () {
 			const out = E.with(test, (msg) => new UnknownError(msg));
 			expect(out.name).to.equal('UnknownError');
 			expect((out as any).cause).to.equal(errorCause);
+		});
+	});
+	describe('clone', function () {
+		it('should clone error', function () {
+			const test = new Error('test');
+			expect(E.clone(test).message).to.equal(test.message);
+			expect(E.clone(test).stack).to.equal(test.stack);
+			expect(E.clone(test).name).to.equal(test.name);
+			expect(E.clone(test)).to.eql(test);
+		});
+		it('should clone error with Error class', function () {
+			const test = new Error('test');
+			expect(E.clone(test, TypeError).message).to.equal(test.message);
+			expect(E.clone(test, TypeError).stack).to.equal(test.stack);
+			expect(E.clone(test, TypeError).name).to.equal('TypeError');
+			expect(E.clone(test, Error)).to.eql(test);
 		});
 	});
 });

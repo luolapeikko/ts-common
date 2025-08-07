@@ -62,6 +62,7 @@ export class ErrorCore {
 	 * Wraps an error in a custom error type.
 	 * @param {unknown} err - The error to wrap.
 	 * @param {new (message?: string) => ET} ErrorClass - The constructor of the error class to use.
+	 * @param {string} [message] - The optional override message.
 	 * @returns {ET} An instance of the custom error type with the original message and stack trace.
 	 * @template ET - The custom error type that extends Error.
 	 * @example
@@ -69,12 +70,15 @@ export class ErrorCore {
 	 *   // ...
 	 * } catch (err) {
 	 *   throw ErrorCore.as(err, TypeError); // throws TypeError
+	 *   throw ErrorCore.as(err, TypeError, 'custom message'); // throws TypeError with custom message
+	 *   throw ErrorCore.as(err, TypeError, (errMsg) => `custom message: ${errMsg}`); // throws TypeError with custom message prefix
 	 * }
 	 * @since v1.0.0
 	 */
-	public static as<ET extends Error>(err: unknown, ErrorClass: new (message?: string) => ET): ET {
+	public static as<ET extends Error>(err: unknown, ErrorClass: new (message?: string) => ET, message?: ((errMsg: string) => string) | string): ET {
 		const source = ErrorCore.from(err);
-		return ErrorCore.cloneProperties(source, new ErrorClass(source.message));
+		const messageOverride = typeof message === 'function' ? message(source.message) : message;
+		return ErrorCore.cloneProperties(source, new ErrorClass(messageOverride ?? source.message));
 	}
 
 	/**
@@ -95,6 +99,16 @@ export class ErrorCore {
 	public static with<ET extends Error>(err: unknown, callback: (message?: string) => ET): ET {
 		const source = ErrorCore.from(err);
 		return ErrorCore.cloneProperties(source, callback(source.message));
+	}
+
+	/**
+	 * Clones an error.
+	 * @param {Error} source - The error to clone.
+	 * @param {new (message?: string) => ET} [ErrorClass] - Optional custom error class to use for the cloned error.
+	 * @returns {Error} A new error instance with the same message and properties as the source error.
+	 */
+	public static clone<ET extends Error>(source: ET, ErrorClass?: new (message?: string) => ET): ET {
+		return ErrorCore.cloneProperties(source, new (ErrorClass ?? Error)(source.message)) as ET;
 	}
 
 	private static cloneProperties<ET extends Error>(source: Error, target: ET): ET {
