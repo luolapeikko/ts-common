@@ -106,6 +106,7 @@ export class ErrorCore {
 	 * @param {Error} source - The error to clone.
 	 * @param {new (message?: string) => ET} [ErrorClass] - Optional custom error class to use for the cloned error.
 	 * @returns {Error} A new error instance with the same message and properties as the source error.
+	 * @since v1.0.5
 	 */
 	public static clone<ET extends Error>(source: ET, ErrorClass?: new (message?: string) => ET): ET {
 		return ErrorCore.cloneProperties(source, new (ErrorClass ?? Error)(source.message)) as ET;
