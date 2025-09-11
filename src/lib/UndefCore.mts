@@ -1,6 +1,8 @@
+import type {WithAssertCore, WithIsCore} from '../types/core.mjs';
 import {type Nullable} from '../types/Nullable.mjs';
 import {type Nullish} from '../types/Nullish.mjs';
-import {type Undef} from '../types/Undef.mjs';
+import type {Undef, UndefFnMapping} from '../types/Undef.mjs';
+import {errorBuilder} from './errorUtils.mjs';
 
 /**
  * Core class for all nullish types.
@@ -16,6 +18,8 @@ export class UndefCore {
 	 * const count = data.filter(UndefCore.isUndefined).length; // 1
 	 * @since v0.5.0
 	 */
+	public static isUndefined(value: unknown): value is undefined;
+	public static isUndefined<T>(value: T): value is Extract<T, undefined>;
 	public static isUndefined(value: unknown): value is undefined {
 		return value === undefined;
 	}
@@ -30,8 +34,68 @@ export class UndefCore {
 	 * const output: string[] = data.filter(UndefCore.isNotUndefined);
 	 * @since v0.5.0
 	 */
-	public static isNotUndefined<T>(value: Undef<T>): value is T {
+	public static isNotUndefined<T>(value: T): value is Exclude<T, undefined> {
 		return value !== undefined;
+	}
+
+	/**
+	 * Type guard check if the given value is `null`.
+	 * @template T The type of the value
+	 * @param {unknown} value The value to check
+	 * @returns {boolean} True if the value is null or undefined, otherwise false
+	 * @example
+	 * const data = ['demo', null, undefined, 'demo'];
+	 * const count = data.filter(UndefCore.isNull).length; // 1
+	 * @since v0.5.0
+	 */
+	public static isNull(value: unknown): value is null;
+	public static isNull<T>(value: T): value is Extract<T, null>;
+	public static isNull(value: unknown): value is null {
+		return value === null;
+	}
+
+	/**
+	 * Type guard check if the given value is NOT `null`.
+	 * @template T The type of the value
+	 * @param {Nullable<T>} value The value to check
+	 * @returns {value is T} True if the value is neither null nor undefined, otherwise false
+	 * @example
+	 * const data = ['demo', null, undefined, 'demo'];
+	 * const output: (string | undefined)[] = data.filter(UndefCore.isNotNull);
+	 * @since v0.5.0
+	 */
+	public static isNotNull<T>(value: T): value is Exclude<T, null> {
+		return !UndefCore.isNull(value);
+	}
+
+	/**
+	 * Type guard check if the given value is null or undefined.
+	 * @template T The type of the value
+	 * @param {unknown} value The value to check
+	 * @returns {boolean} True if the value is null or undefined, otherwise false
+	 * @example
+	 * const data = ['demo', null, undefined, 'demo'];
+	 * const count = data.filter(UndefCore.isNullish).length; // 2
+	 * @since v0.5.0
+	 */
+	public static isNullish(value: unknown): value is null | undefined;
+	public static isNullish<T>(value: T): value is Extract<T, null | undefined>;
+	public static isNullish(value: unknown): value is null | undefined {
+		return value === null || value === undefined;
+	}
+
+	/**
+	 * Type guard check if the given value is NOT `null` or `undefined`.
+	 * @template T The type of the value
+	 * @param {Nullish<T>} value The value to check
+	 * @returns {value is T} True if the value is neither null nor undefined, otherwise false
+	 * @example
+	 * const data = ['demo', null, undefined, 'demo'];
+	 * const output: string[] = data.filter(UndefCore.isNotNullish);
+	 * @since v0.5.0
+	 */
+	public static isNotNullish<T>(value: T): value is Exclude<T, null | undefined> {
+		return !UndefCore.isNullish(value);
 	}
 
 	/**
@@ -45,7 +109,7 @@ export class UndefCore {
 	 */
 	public static assertUndefined(value: unknown): asserts value is undefined {
 		if (!UndefCore.isUndefined(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildErr(value, 'Undefined');
 		}
 	}
 
@@ -63,22 +127,8 @@ export class UndefCore {
 	 */
 	public static assertNotUndefined<T>(value: Undef<T>): asserts value is T {
 		if (!UndefCore.isNotUndefined(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildErr(value, 'NotUndefined');
 		}
-	}
-
-	/**
-	 * Type guard check if the given value is `null`.
-	 * @template T The type of the value
-	 * @param {unknown} value The value to check
-	 * @returns {boolean} True if the value is null or undefined, otherwise false
-	 * @example
-	 * const data = ['demo', null, undefined, 'demo'];
-	 * const count = data.filter(UndefCore.isNull).length; // 1
-	 * @since v0.5.0
-	 */
-	public static isNull(value: Nullable<unknown>): value is null {
-		return value === null;
 	}
 
 	/**
@@ -92,22 +142,8 @@ export class UndefCore {
 	 */
 	public static assertNull(value: unknown): asserts value is null {
 		if (!UndefCore.isNull(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildErr(value, 'Null');
 		}
-	}
-
-	/**
-	 * Type guard check if the given value is NOT `null`.
-	 * @template T The type of the value
-	 * @param {Nullable<T>} value The value to check
-	 * @returns {value is T} True if the value is neither null nor undefined, otherwise false
-	 * @example
-	 * const data = ['demo', null, undefined, 'demo'];
-	 * const output: (string | undefined)[] = data.filter(UndefCore.isNotNull);
-	 * @since v0.5.0
-	 */
-	public static isNotNull<T>(value: Nullable<T>): value is T {
-		return !UndefCore.isNull(value);
 	}
 
 	/**
@@ -124,22 +160,8 @@ export class UndefCore {
 	 */
 	public static assertNotNull<T>(value: Nullable<T>): asserts value is T {
 		if (!UndefCore.isNotNull(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildErr(value, 'NotNull');
 		}
-	}
-
-	/**
-	 * Type guard check if the given value is null or undefined.
-	 * @template T The type of the value
-	 * @param {unknown} value The value to check
-	 * @returns {boolean} True if the value is null or undefined, otherwise false
-	 * @example
-	 * const data = ['demo', null, undefined, 'demo'];
-	 * const count = data.filter(UndefCore.isNullish).length; // 2
-	 * @since v0.5.0
-	 */
-	public static isNullish(value: Nullish<unknown>): value is null | undefined {
-		return value === null || value === undefined;
 	}
 
 	/**
@@ -153,22 +175,8 @@ export class UndefCore {
 	 */
 	public static assertNullish(value: unknown): asserts value is null | undefined {
 		if (!UndefCore.isNullish(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildErr(value, 'Nullish');
 		}
-	}
-
-	/**
-	 * Type guard check if the given value is NOT `null` or `undefined`.
-	 * @template T The type of the value
-	 * @param {Nullish<T>} value The value to check
-	 * @returns {value is T} True if the value is neither null nor undefined, otherwise false
-	 * @example
-	 * const data = ['demo', null, undefined, 'demo'];
-	 * const output: string[] = data.filter(UndefCore.isNotNullish);
-	 * @since v0.5.0
-	 */
-	public static isNotNullish<T>(value: Nullish<T>): value is T {
-		return !UndefCore.isNullish(value);
 	}
 
 	/**
@@ -185,18 +193,19 @@ export class UndefCore {
 	 */
 	public static assertNotNullish(value: unknown): asserts value is NonNullable<unknown> {
 		if (!UndefCore.isNotNullish(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildErr(value, 'NotNullish');
 		}
 	}
 
 	/**
 	 * Builds an type error `Value is ${JSON.stringify(value)}`.
 	 * @param {unknown} value - The invalid value.
+	 * @param {'Null' | 'Undefined' | 'Nullish' | 'NotNull' | 'NotUndefined' | 'NotNullish'} typeName - The type name for the error.
 	 * @returns {TypeError} The created error.
 	 * @since v0.5.0
 	 */
-	public static buildErr(value: unknown): TypeError {
-		return new TypeError(`Value is ${JSON.stringify(value)}`);
+	public static buildErr(value: unknown, typeName: 'Null' | 'Undefined' | 'Nullish' | 'NotNull' | 'NotUndefined' | 'NotNullish'): TypeError {
+		return errorBuilder(value, typeName);
 	}
 
 	/* c8 ignore next 3 */
@@ -295,3 +304,5 @@ export function isNull(value: Nullable<unknown>): value is null {
 export function isNotNull<T>(value: Nullable<T>): value is T {
 	return UndefCore.isNotNull(value);
 }
+
+void 0 as unknown as typeof UndefCore satisfies WithIsCore<UndefFnMapping> & WithAssertCore<UndefFnMapping>;

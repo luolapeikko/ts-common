@@ -1,4 +1,4 @@
-import type {ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
+import type {MutableRecord, ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
 
 /**
  * The core Object functions
@@ -148,6 +148,28 @@ export class RecordCore {
 			partial[key] = args[1][key];
 		}
 		return partial;
+	}
+
+	/**
+	 * Creates a shallow clone of the given object, making all properties writable.
+	 * @template T - The type of the object to clone.
+	 * @param {T} obj - The object to clone.
+	 * @returns {MutableRecord<T>} A new object with all properties writable.
+	 * @since v1.0.0
+	 */
+	public static clone<T extends object>(obj: T): MutableRecord<T> {
+		RecordCore.assert(obj);
+		const proto = Object.getPrototypeOf(obj) as object | null;
+		const clone = Object.create(typeof proto === 'object' || proto === null ? proto : Object.prototype) as Record<PropertyKey, unknown>;
+		for (const key of Reflect.ownKeys(obj)) {
+			const desc = Object.getOwnPropertyDescriptor(obj, key)!;
+			desc.configurable = true;
+			if ('writable' in desc) {
+				desc.writable = true;
+			}
+			Object.defineProperty(clone, key, desc);
+		}
+		return clone as MutableRecord<T>;
 	}
 
 	/**
@@ -375,95 +397,6 @@ export function objectKeys<R extends Record<string | number | symbol, unknown>>(
  */
 export function objectValues<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
 	return RecordCore.values<R>(value);
-}
-
-/**
- * Creates a function that selects a specific property value from an object.
- *
- * Useful for use with arrays `map` function when extracting a single property from each object.
- * @deprecated Use {@link RecordCore.onKey} instead or import as a R alias and `R.onKey`
- * @template K Property name in target that will be selected
- * @template T Object target from which the property will be selected
- * @param {K} key The property name to select
- * @param {T} target to select the property value from
- * @returns {(target: T) => T[K]} select value by key from the target
- * @example
- * type Data = {demo: string, value: number|null};
- * const dataArray: Data[] = [{demo: 'hello', value: null}];
- * const output: string[] = dataArray.map(pick(['demo']));
- * @since v0.4.2
- */
-export function prop<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K];
-export function prop<K extends PropertyKey>(key: K): <T extends Record<K, any>>(target: T) => T[K];
-export function prop<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K] {
-	return RecordCore.onKey(key);
-}
-
-/**
- * Creates a predicate function that checks whether a given object's property equals the specified value.
- *
- * Supports both strictly typed object structures and looser records with optional properties.
- *
- * Useful for filtering arrays of objects based on property values.
- * @deprecated Use {@link RecordCore.onKeyEqual} instead or import as a R alias and `R.onKeyEqual`
- * @template T - The object type with known keys (strict overload).
- * @template K - The key of the property to compare.
- * @template V - The value type of the property (loose overload).
- * @overload
- * @param {K} key - The property name to compare.
- * @param {T[K]} value - The value to match against.
- * @returns {(obj: T) => boolean} A predicate for use with arrays of type T.
- * @overload
- * @param {K} key - The property name to compare.
- * @param {V} value - The value to match against.
- * @returns {(obj: Partial<Record<K, V>>) => boolean} A predicate for objects with optional keys of type K.
- * @example
- * // Strict object structure
- * const isAdmin = propEquals<User, 'role'>('role', 'admin');
- * const admins = users.filter(isAdmin);
- * @example
- * // Loosely typed object
- * const isPublished = propEquals('status', 'published');
- * const publishedPosts = posts.filter(isPublished);
- * @since v0.4.2
- */
-export function propEquals<T extends Record<PropertyKey, any>, K extends keyof T>(key: K, value: T[K]): (obj: T) => boolean;
-export function propEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
-export function propEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean {
-	return RecordCore.onKeyEqual(key, value);
-}
-
-/**
- * Creates a predicate function that checks whether a given object's property does **not** equal the specified value.
- *
- * Supports both strictly typed object structures and looser records with optional properties.
- *
- * Useful for filtering arrays of objects where you want to exclude items with a certain property value.
- * @deprecated Use {@link RecordCore.onKeyNotEqual} instead or import as a R alias and `R.onKeyNotEqual`
- * @template T - The object type with known keys (strict overload).
- * @template K - The key of the property to compare.
- * @template V - The value type of the property (loose overload).
- * @overload
- * @param {K} key - The property name to compare.
- * @param {T[K]} value - The value to check against.
- * @returns {(obj: T) => boolean} A predicate function returning true when `obj[key] !== value`.
- * @overload
- * @param {K} key - The property name to compare.
- * @param {V} value - The value to check against.
- * @returns {(obj: Partial<Record<K, V>>) => boolean} A predicate for loosely typed or optional-key objects.
- * @example
- * // Strict object structure
- * const isNotAdmin = propNotEquals<User, 'role'>('role', 'admin');
- * const nonAdmins = users.filter(isNotAdmin);
- * @example
- * // Loosely typed object
- * const isNotPublished = propNotEquals('status', 'published');
- * const draftsOrArchived = posts.filter(isNotPublished);
- */
-export function propNotEquals<T extends Record<PropertyKey, any>, K extends keyof T>(key: K, value: T[K]): (obj: T) => boolean;
-export function propNotEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
-export function propNotEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean {
-	return RecordCore.onKeyNotEqual(key, value);
 }
 
 /**

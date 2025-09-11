@@ -5,49 +5,53 @@ describe('iterableUtils', () => {
 	describe('isIterable', () => {
 		it('should narrow type to Iterable for iterable types', () => {
 			const arr: number[] | null = [1, 2, 3];
-			if (I.isIterable(arr)) {
+			if (I.is(arr)) {
 				assertType<Iterable<number>>(arr);
 			}
 			const str: string | null = 'abc';
-			if (I.isIterable(str)) {
+			if (I.is(str)) {
 				assertType<Iterable<string>>(str);
 			}
 			const map: Map<string, number> | null = new Map();
-			if (I.isIterable(map)) {
+			if (I.is(map)) {
 				assertType<Iterable<[string, number]>>(map);
 			}
 			const set: Set<number> | null = new Set<number>();
-			if (I.isIterable(set)) {
+			if (I.is(set)) {
 				assertType<Iterable<number>>(set);
 			}
 			function* generator(): Generator<number> {
 				yield 1;
 			}
 			const gen = generator();
-			if (I.isIterable(gen)) {
+			if (I.is(gen)) {
 				assertType<Iterable<number>>(gen);
+			}
+			// @ts-expect-error Argument of type 'number[]' is not assignable to parameter of type 'string[]'.
+			if (I.is<string[]>(arr)) {
+				assertType<Iterable<number>>(arr);
 			}
 		});
 		describe('isNotIterable', () => {
 			it('should narrow non-iterable types', () => {
 				const obj: Iterable<unknown> | {} = {};
-				if (I.isNotIterable(obj)) {
+				if (I.isNot(obj)) {
 					assertType<{}>(obj);
 				}
 				const num: Iterable<unknown> | number = 123;
-				if (I.isNotIterable(num)) {
+				if (I.isNot(num)) {
 					assertType<number>(num);
 				}
 				const bool: Iterable<unknown> | boolean = true;
-				if (I.isNotIterable(bool)) {
+				if (I.isNot(bool)) {
 					assertType<boolean>(bool);
 				}
 				const nul: Iterable<unknown> | null = null;
-				if (I.isNotIterable(nul)) {
+				if (I.isNot(nul)) {
 					assertType<null>(nul);
 				}
 				const undef: Iterable<unknown> | undefined = undefined;
-				if (I.isNotIterable(undef)) {
+				if (I.isNot(undef)) {
 					// Should not enter this block, type remains undefined
 					assertType<undefined>(undef);
 				}
@@ -60,7 +64,7 @@ describe('iterableUtils', () => {
 				yield 1;
 			}
 			const asyncGen: AsyncGenerator<number, any, any> | null = asyncGenerator();
-			if (I.isAsyncIterable(asyncGen)) {
+			if (I.isAsync(asyncGen)) {
 				assertType<AsyncIterable<number>>(asyncGen);
 			}
 		});
@@ -68,23 +72,23 @@ describe('iterableUtils', () => {
 	describe('isNotAsyncIterable', () => {
 		it('should narrow non-async iterable types', () => {
 			const obj: AsyncIterable<unknown> | {} = {};
-			if (I.isNotAsyncIterable(obj)) {
+			if (I.isNotAsync(obj)) {
 				assertType<{}>(obj);
 			}
 			const num: AsyncIterable<unknown> | number = 123;
-			if (I.isNotAsyncIterable(num)) {
+			if (I.isNotAsync(num)) {
 				assertType<number>(num);
 			}
 			const bool: AsyncIterable<unknown> | boolean = true;
-			if (I.isNotAsyncIterable(bool)) {
+			if (I.isNotAsync(bool)) {
 				assertType<boolean>(bool);
 			}
 			const nul: AsyncIterable<unknown> | null = null;
-			if (I.isNotAsyncIterable(nul)) {
+			if (I.isNotAsync(nul)) {
 				assertType<null>(nul);
 			}
 			const undef: AsyncIterable<unknown> | undefined = undefined;
-			if (I.isNotAsyncIterable(undef)) {
+			if (I.isNotAsync(undef)) {
 				// Should not enter this block, type remains undefined
 				assertType<undefined>(undef);
 			}

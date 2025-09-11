@@ -54,3 +54,7 @@ export type ObjectMappedArrayTuples<R extends object> = R extends EmptyObject
 		: {
 				[K in keyof R]-?: [K, Exclude<R[K], undefined>];
 			}[keyof R][];
+
+export type MutableRecord<T> = {
+	-readonly [K in keyof T]: T[K];
+};

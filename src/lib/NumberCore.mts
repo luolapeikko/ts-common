@@ -1,4 +1,7 @@
+import type {WithAssertCore, WithFromCore, WithIsCore} from '../types/core.mjs';
 import {type Nullish} from '../types/Nullish.mjs';
+import type {NumberFnMapping} from '../types/Number.mts';
+import {errorBuilder, errorPrefixBuilder} from './errorUtils.mjs';
 
 /**
  * The core Number functions.
@@ -25,35 +28,20 @@ export class NumberCore {
 	}
 
 	/**
-	 * Type guard check if the given value is an integer or float value. (not NaN)
-	 * @param {unknown} value - The value to check.
-	 * @returns {boolean} True if the value is a number; otherwise, false.
-	 * @since v1.0.4
+	 * Get or create an integer from the given value. (Note: on float conversion, Math.trunc() is used)
+	 * @throws {TypeError} If the given value cannot be converted to an integer.
+	 * @param {unknown} value - The value to convert.
+	 * @returns {number} The integer value.
+	 * @since v1.0.0
 	 * @example
-	 * if (NumberCore.isNumber(value)) {
-	 *   // value is a number
-	 * }
-	 */
-	public static isNumber(value: unknown): value is number {
-		return typeof value === 'number' && !Number.isNaN(value);
-	}
-
-	/**
-	 * Asserts that the given value is an integer or float value.
-	 * @example
+	 * const value = NumberCore.intFrom('123');
+	 * const value = NumberCore.intFrom(123);
 	 * function add(a: number, b: number): number {
-	 *   NumberCore.assertNumber(a);
-	 *   NumberCore.assertNumber(b);
-	 *   return a + b;
+	 *   return IntCore.intFrom(a) + IntCore.intFrom(b);
 	 * }
-	 * @throws {TypeError} If the given value is not a number.
-	 * @param {unknown} value - The value to assert.
-	 * @since v1.0.4
 	 */
-	public static assertNumber(value: unknown): asserts value is number {
-		if (!NumberCore.isNumber(value)) {
-			throw NumberCore.buildNumberErr(value);
-		}
+	public static intFrom(value: Nullish<string | number | bigint>): number {
+		return NumberCore.handleIntFrom(value);
 	}
 
 	/**
@@ -74,58 +62,40 @@ export class NumberCore {
 	}
 
 	/**
-	 * Type guard check if the given value is an float.
-	 * @param {unknown} value - The value to check.
-	 * @returns {boolean} True if the value is an float; otherwise, false.
-	 * @since v1.0.0
+	 * Get or create a bigint from the given value. (Note: on float conversion, Math.trunc() is used)
+	 * @throws {TypeError} If the given value cannot be converted to a bigint.
+	 * @param {unknown} value - The value to convert.
+	 * @returns {bigint} The bigint value.
+	 * @since v1.0.4
 	 */
-	public static isFloat(value: unknown): value is number {
-		return Number.isFinite(value) && !Number.isInteger(value);
+	public static bigIntFrom(value: Nullish<string | number | bigint>): bigint {
+		return NumberCore.handleBigIntFrom(value);
 	}
 
 	/**
-	 * Asserts that the given value is an float.
+	 * Asserts that the given value is an integer or float value.
 	 * @example
 	 * function add(a: number, b: number): number {
-	 *   NumberCore.assertFloat(a);
-	 *   NumberCore.assertFloat(b);
+	 *   NumberCore.assertNumber(a);
+	 *   NumberCore.assertNumber(b);
 	 *   return a + b;
 	 * }
-	 * @throws {TypeError} If the given value is not an float.
+	 * @throws {TypeError} If the given value is not a number.
 	 * @param {unknown} value - The value to assert.
-	 * @since v1.0.0
+	 * @since v1.0.4
 	 */
-	public static assertFloat(value: unknown): asserts value is number {
-		if (!NumberCore.isFloat(value)) {
-			throw NumberCore.buildFloatErr(value);
+	public static assertNumber(value: unknown): asserts value is number;
+	public static assertNumber<T>(value: T): asserts value is Extract<T, number>;
+	public static assertNumber(value: unknown): asserts value is number {
+		if (!NumberCore.isNumber(value)) {
+			throw NumberCore.buildErr(value, 'Number');
 		}
 	}
 
-	/**
-	 * Get or create an integer from the given value. (Note: on float conversion, Math.trunc() is used)
-	 * @throws {TypeError} If the given value cannot be converted to an integer.
-	 * @param {unknown} value - The value to convert.
-	 * @returns {number} The integer value.
-	 * @since v1.0.0
-	 * @example
-	 * const value = NumberCore.intFrom('123');
-	 * const value = NumberCore.intFrom(123);
-	 * function add(a: number, b: number): number {
-	 *   return IntCore.intFrom(a) + IntCore.intFrom(b);
-	 * }
-	 */
-	public static intFrom(value: Nullish<string | number | bigint>): number {
-		return NumberCore.handleIntFrom(value);
-	}
-
-	/**
-	 * Type guard check if the given value is an integer.
-	 * @param {unknown} value - The value to check.
-	 * @returns {boolean} True if the value is an integer; otherwise, false.
-	 * @since v1.0.0
-	 */
-	public static isInt(value: unknown): value is number {
-		return Number.isInteger(value);
+	public static assertNotNumber<T>(value: T): asserts value is Exclude<T, number> {
+		if (NumberCore.isNumber(value)) {
+			throw NumberCore.buildErr(value, 'NotNumber');
+		}
 	}
 
 	/**
@@ -140,31 +110,44 @@ export class NumberCore {
 	 * @param {unknown} value - The value to assert.
 	 * @since v1.0.0
 	 */
+	public static assertInt(value: unknown): asserts value is number;
+	public static assertInt<T>(value: T): asserts value is Extract<T, number>;
 	public static assertInt(value: unknown): asserts value is number {
 		if (!NumberCore.isInt(value)) {
-			throw NumberCore.buildIntErr(value);
+			throw NumberCore.buildErr(value, 'Integer');
+		}
+	}
+
+	public static assertNotInt<T>(value: T): asserts value is Exclude<T, number> {
+		if (NumberCore.isInt(value)) {
+			throw NumberCore.buildErr(value, 'NotInteger');
 		}
 	}
 
 	/**
-	 * Get or create a bigint from the given value. (Note: on float conversion, Math.trunc() is used)
-	 * @throws {TypeError} If the given value cannot be converted to a bigint.
-	 * @param {unknown} value - The value to convert.
-	 * @returns {bigint} The bigint value.
-	 * @since v1.0.4
+	 * Asserts that the given value is an float.
+	 * @example
+	 * function add(a: number, b: number): number {
+	 *   NumberCore.assertFloat(a);
+	 *   NumberCore.assertFloat(b);
+	 *   return a + b;
+	 * }
+	 * @throws {TypeError} If the given value is not an float.
+	 * @param {unknown} value - The value to assert.
+	 * @since v1.0.0
 	 */
-	public static bigIntFrom(value: Nullish<string | number | bigint>): bigint {
-		return NumberCore.handleBigIntFrom(value);
+	public static assertFloat(value: unknown): asserts value is number;
+	public static assertFloat<T>(value: T): asserts value is Extract<T, number>;
+	public static assertFloat(value: unknown): asserts value is number {
+		if (!NumberCore.isFloat(value)) {
+			throw NumberCore.buildErr(value, 'Float');
+		}
 	}
 
-	/**
-	 * Checks if the given value is a bigint.
-	 * @param {unknown} value - The value to check.
-	 * @returns {boolean} True if the value is a bigint; otherwise, false.
-	 * @since v1.0.4
-	 */
-	public static isBigInt(value: unknown): value is bigint {
-		return typeof value === 'bigint';
+	public static assertNotFloat<T>(value: T): asserts value is Exclude<T, number> {
+		if (NumberCore.isFloat(value)) {
+			throw NumberCore.buildErr(value, 'NotFloat');
+		}
 	}
 
 	/**
@@ -179,62 +162,93 @@ export class NumberCore {
 	 * @param {unknown} value - The value to assert.
 	 * @since v1.0.4
 	 */
+	public static assertBigInt(value: unknown): asserts value is bigint;
+	public static assertBigInt<T>(value: T): asserts value is Extract<T, bigint>;
 	public static assertBigInt(value: unknown): asserts value is bigint {
 		if (!NumberCore.isBigInt(value)) {
-			throw NumberCore.buildBigIntErr(value);
+			throw NumberCore.buildErr(value, 'BigInt');
+		}
+	}
+
+	public static assertNotBigInt<T>(value: T): asserts value is Exclude<T, bigint> {
+		if (NumberCore.isBigInt(value)) {
+			throw NumberCore.buildErr(value, 'NotBigInt');
 		}
 	}
 
 	/**
-	 * Builds an type error `Invalid integer: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
+	 * Type guard check if the given value is an integer or float value. (not NaN)
+	 * @param {unknown} value - The value to check.
+	 * @returns {boolean} True if the value is a number; otherwise, false.
 	 * @since v1.0.4
+	 * @example
+	 * if (NumberCore.isNumber(value)) {
+	 *   // value is a number
+	 * }
 	 */
-	public static buildNumberErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.numberErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.numberErrMsg(`${JSON.stringify(value)}`));
+	public static isNumber(value: unknown): value is number;
+	public static isNumber<T>(value: T): value is Extract<T, number>;
+	public static isNumber(value: unknown): value is number {
+		return typeof value === 'number' && !Number.isNaN(value);
+	}
+
+	public static isNotNumber<T>(value: T): value is Exclude<T, number> {
+		return !NumberCore.isNumber(value);
 	}
 
 	/**
-	 * Builds an type error `Invalid float: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
+	 * Type guard check if the given value is an float.
+	 * @param {unknown} value - The value to check.
+	 * @returns {boolean} True if the value is an float; otherwise, false.
 	 * @since v1.0.0
 	 */
-	public static buildFloatErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.floatErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.floatErrMsg(`${JSON.stringify(value)}`));
+	public static isFloat(value: unknown): value is number;
+	public static isFloat<T>(value: T): value is Extract<T, number>;
+	public static isFloat(value: unknown): value is number {
+		return Number.isFinite(value) && !Number.isInteger(value);
+	}
+
+	public static isNotFloat<T>(value: T): value is Exclude<T, number> {
+		return !NumberCore.isFloat(value);
 	}
 
 	/**
-	 * Builds an type error `Invalid integer: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
+	 * Type guard check if the given value is an integer.
+	 * @param {unknown} value - The value to check.
+	 * @returns {boolean} True if the value is an integer; otherwise, false.
 	 * @since v1.0.0
 	 */
-	public static buildIntErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.intErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.intErrMsg(`${JSON.stringify(value)}`));
+	public static isInt(value: unknown): value is number;
+	public static isInt<T>(value: T): value is Extract<T, number>;
+	public static isInt(value: unknown): value is number {
+		return Number.isInteger(value);
+	}
+
+	public static isNotInt<T>(value: T): value is Exclude<T, number> {
+		return !NumberCore.isInt(value);
 	}
 
 	/**
-	 * Builds an type error `Invalid bigint: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
+	 * Checks if the given value is a bigint.
+	 * @param {unknown} value - The value to check.
+	 * @returns {boolean} True if the value is a bigint; otherwise, false.
 	 * @since v1.0.4
 	 */
-	public static buildBigIntErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.bigIntErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.bigIntErrMsg(`${JSON.stringify(value)}`));
+	public static isBigInt(value: unknown): value is bigint;
+	public static isBigInt<T>(value: T): value is Extract<T, bigint>;
+	public static isBigInt(value: unknown): value is bigint {
+		return typeof value === 'bigint';
+	}
+
+	public static isNotBigInt<T>(value: T): value is Exclude<T, bigint> {
+		return !NumberCore.isBigInt(value);
+	}
+
+	public static buildErr(
+		value: unknown,
+		typeName: 'BigInt' | 'Float' | 'Integer' | 'Number' | 'NotBigInt' | 'NotFloat' | 'NotInteger' | 'NotNumber',
+	): TypeError {
+		return errorBuilder(value, typeName);
 	}
 
 	private static handleNumberFrom(value: unknown, args?: {orgValue: unknown; buildErr: (value: unknown) => TypeError}): number {
@@ -246,14 +260,14 @@ export class NumberCore {
 		}
 		if (typeof value === 'string') {
 			return NumberCore.isFloatStringLike(value)
-				? NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: NumberCore.buildNumberErr})
-				: NumberCore.handleIntFrom(parseFloat(value), {orgValue: value, buildErr: NumberCore.buildNumberErr});
+				? NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: (v) => NumberCore.buildErr(v, 'Number')})
+				: NumberCore.handleIntFrom(parseFloat(value), {orgValue: value, buildErr: (v) => NumberCore.buildErr(v, 'Number')});
 		}
 		if (NumberCore.isBigInt(value)) {
-			NumberCore.assertBigIntSafeNumber(value, NumberCore.numberErrMsg(`${value} exceeds safe number range.`));
-			return NumberCore.handleIntFrom(Number(value), {orgValue: value, buildErr: NumberCore.buildNumberErr});
+			NumberCore.assertBigIntSafeNumber(value, `${errorPrefixBuilder('Number')}: ${value} exceeds safe number range.`);
+			return NumberCore.handleIntFrom(Number(value), {orgValue: value, buildErr: (v) => NumberCore.buildErr(v, 'Number')});
 		}
-		throw args ? args.buildErr(args.orgValue) : NumberCore.buildNumberErr(value);
+		throw args ? args.buildErr(args.orgValue) : NumberCore.buildErr(value, 'Number');
 	}
 
 	private static handleFloatFrom(value: unknown, args?: {orgValue: unknown; buildErr: (value: unknown) => TypeError}): number {
@@ -264,13 +278,13 @@ export class NumberCore {
 			return value + 0.0; // force int to float
 		}
 		if (typeof value === 'string') {
-			return NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: NumberCore.buildFloatErr});
+			return NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: (v) => NumberCore.buildErr(v, 'Float')});
 		}
 		if (NumberCore.isBigInt(value)) {
-			NumberCore.assertBigIntSafeNumber(value, NumberCore.floatErrMsg(`${value} exceeds safe float range.`));
+			NumberCore.assertBigIntSafeNumber(value, `${errorPrefixBuilder('Float')}: ${value} exceeds safe float range.`);
 			return NumberCore.handleFloatFrom(Number(value));
 		}
-		throw args ? args.buildErr(args.orgValue) : NumberCore.buildFloatErr(value);
+		throw args ? args.buildErr(args.orgValue) : NumberCore.buildErr(value, 'Float');
 	}
 
 	private static handleIntFrom(value: unknown, args?: {orgValue: unknown; buildErr: (value: unknown) => TypeError}): number {
@@ -281,13 +295,13 @@ export class NumberCore {
 			return Math.trunc(value);
 		}
 		if (typeof value === 'string') {
-			return NumberCore.handleIntFrom(parseInt(value), {orgValue: value, buildErr: NumberCore.buildIntErr});
+			return NumberCore.handleIntFrom(parseInt(value), {orgValue: value, buildErr: (v) => NumberCore.buildErr(v, 'Integer')});
 		}
 		if (NumberCore.isBigInt(value)) {
-			NumberCore.assertBigIntSafeNumber(value, NumberCore.intErrMsg(`${value} exceeds safe integer range.`));
+			NumberCore.assertBigIntSafeNumber(value, `${errorPrefixBuilder('Integer')}: ${value} exceeds safe integer range.`);
 			return Number(value);
 		}
-		throw args ? args.buildErr(args.orgValue) : NumberCore.buildIntErr(value);
+		throw args ? args.buildErr(args.orgValue) : NumberCore.buildErr(value, 'Integer');
 	}
 
 	private static assertBigIntSafeNumber(value: bigint, errorMessage: string): asserts value is bigint {
@@ -309,7 +323,7 @@ export class NumberCore {
 		if (typeof value === 'string') {
 			return NumberCore.castBigInt(value);
 		}
-		throw NumberCore.buildBigIntErr(orgValue ?? value);
+		throw NumberCore.buildErr(orgValue ?? value, 'BigInt');
 	}
 
 	private static castBigInt(value: string | number): bigint {
@@ -319,7 +333,7 @@ export class NumberCore {
 			// eslint-disable-next-line sonarjs/no-ignored-exceptions
 		} catch (_error) {
 			// BigInt throws SyntaxError on invalid string, override it with TypeError
-			throw NumberCore.buildBigIntErr(value);
+			throw NumberCore.buildErr(value, 'BigInt');
 		}
 	}
 
@@ -327,24 +341,10 @@ export class NumberCore {
 		return typeof value === 'string' && NumberCore.floatOnlyRegex.test(value.trim());
 	}
 
-	private static bigIntErrMsg(message: string): string {
-		return `Invalid bigint: ${message}`;
-	}
-
-	private static floatErrMsg(message: string): string {
-		return `Invalid float: ${message}`;
-	}
-
-	private static intErrMsg(message: string): string {
-		return `Invalid integer: ${message}`;
-	}
-
-	private static numberErrMsg(message: string): string {
-		return `Invalid number: ${message}`;
-	}
-
 	/* c8 ignore next 3 */
 	private constructor() {
 		throw new Error('This class should not be instantiated.');
 	}
 }
+
+void 0 as unknown as typeof NumberCore satisfies WithFromCore<NumberFnMapping> & WithIsCore<NumberFnMapping> & WithAssertCore<NumberFnMapping>;

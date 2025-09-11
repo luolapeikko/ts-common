@@ -1,35 +1,50 @@
+import type {WithAssertCore, WithFromCore, WithIsCore} from '../types/core.mjs';
+import type {IterFnMapping} from '../types/Iter.mjs';
+import {errorBuilder} from './errorUtils.mjs';
+import {TypeCore} from './TypeCore.mjs';
+
 /**
  * The core iteration functions.
  * @since v1.0.0
  */
 export class IterCore {
+	public static from(value: null | undefined | Iterable<unknown>): Iterable<unknown> {
+		IterCore.assert(value);
+		return value;
+	}
+
+	public static asyncFrom(value: null | undefined | AsyncIterable<unknown>): AsyncIterable<unknown> {
+		IterCore.assertAsync(value);
+		return value;
+	}
+
 	/**
 	 * Type guard that checks if a value is an iterable object.
 	 * @template T - The type of elements contained in the iterable.
 	 * @param {unknown} value - The value to check for iterability.
+	 * @param {boolean} [excludePrimitive=false] - Whether to exclude primitive types from the check. (string)
 	 * @returns {boolean} `true` if the value implements the `Iterable` interface; otherwise, `false`.
 	 * @since v1.0.0
 	 */
-	public static isIterable<T>(value: unknown): value is Iterable<T> {
-		return value != null && typeof (value as Iterable<T>)[Symbol.iterator] === 'function';
-	}
-
-	public static assertIterable<T>(value: unknown): Iterable<T> {
-		if (IterCore.isNotIterable(value)) {
-			throw IterCore.buildIterableErr(value);
+	public static is(value: unknown, excludePrimitive?: boolean): value is Iterable<unknown>;
+	public static is<T>(value: T, excludePrimitive?: boolean): value is Extract<T, Iterable<unknown>>;
+	public static is(value: unknown, excludePrimitive = false): value is Iterable<unknown> {
+		if (excludePrimitive && TypeCore.isPrimitive(value)) {
+			return false;
 		}
-		return value;
+		return value != null && typeof (value as Iterable<unknown>)[Symbol.iterator] === 'function';
 	}
 
 	/**
 	 * Type guard that checks if a value is not an iterable object.
 	 * @template T - The type of elements contained in the iterable.
 	 * @param {unknown} value - The value to check for non-iterability.
+	 * @param {boolean} [excludePrimitive=false] - Whether to exclude primitive types from the check. (string)
 	 * @returns {boolean} `true` if the value does not implement the `Iterable` interface; otherwise, `false`.
 	 * @since v1.0.0
 	 */
-	public static isNotIterable<T>(value: unknown): value is Exclude<unknown, Iterable<T>> {
-		return !IterCore.isIterable(value);
+	public static isNot<T>(value: T, excludePrimitive = false): value is Exclude<T, Iterable<unknown>> {
+		return !IterCore.is<T>(value, excludePrimitive);
 	}
 
 	/**
@@ -39,8 +54,33 @@ export class IterCore {
 	 * @returns {boolean} `true` if the value implements the `AsyncIterable` interface; otherwise, `false`.
 	 * @since v1.0.0
 	 */
-	public static isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
-		return value != null && typeof (value as AsyncIterable<T>)[Symbol.asyncIterator] === 'function';
+	public static isAsync(value: unknown): value is AsyncIterable<unknown>;
+	public static isAsync<T>(value: T): value is Extract<T, AsyncIterable<unknown>>;
+	public static isAsync(value: unknown): value is AsyncIterable<unknown> {
+		return value != null && typeof (value as AsyncIterable<unknown>)[Symbol.asyncIterator] === 'function';
+	}
+
+	/**
+	 * Type guard that checks if a value is not an async iterable object.
+	 * @template T - The type of elements contained in the async iterable.
+	 * @param {unknown} value - The value to check for non-async iterability.
+	 * @returns {boolean} `true` if the value does not implement the `AsyncIterable` interface; otherwise, `false`.
+	 * @since v1.0.0
+	 */
+	public static isNotAsync<T>(value: T): value is Exclude<T, AsyncIterable<unknown>> {
+		return !IterCore.isAsync(value);
+	}
+
+	public static assert(value: unknown): asserts value is Iterable<unknown> {
+		if (IterCore.isNot(value)) {
+			throw IterCore.buildErr(value, 'Iterable');
+		}
+	}
+
+	public static assertNot<T>(value: T): asserts value is Exclude<T, Iterable<unknown>> {
+		if (IterCore.is(value)) {
+			throw IterCore.buildErr(value, 'NotIterable');
+		}
 	}
 
 	/**
@@ -51,42 +91,20 @@ export class IterCore {
 	 * @throws {TypeError} If the value is not an async iterable.
 	 * @since v1.0.0
 	 */
-	public static assertAsyncIterable<T>(value: unknown): AsyncIterable<T> {
-		if (IterCore.isNotAsyncIterable(value)) {
-			throw IterCore.buildAsyncIterableErr(value);
+	public static assertAsync(value: unknown): asserts value is AsyncIterable<unknown> {
+		if (IterCore.isNotAsync(value)) {
+			throw IterCore.buildErr(value, 'AsyncIterable');
 		}
-		return value;
 	}
 
-	/**
-	 * Type guard that checks if a value is not an async iterable object.
-	 * @template T - The type of elements contained in the async iterable.
-	 * @param {unknown} value - The value to check for non-async iterability.
-	 * @returns {boolean} `true` if the value does not implement the `AsyncIterable` interface; otherwise, `false`.
-	 * @since v1.0.0
-	 */
-	public static isNotAsyncIterable<T>(value: unknown): value is Exclude<unknown, AsyncIterable<T>> {
-		return !IterCore.isAsyncIterable(value);
+	public static assertNotAsync<T>(value: T): asserts value is Exclude<T, AsyncIterable<unknown>> {
+		if (IterCore.isAsync(value)) {
+			throw IterCore.buildErr(value, 'NotAsyncIterable');
+		}
 	}
 
-	/**
-	 * Builds an type error `Invalid Iterable: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
-	 * @since v1.0.0
-	 */
-	public static buildIterableErr(value: unknown): TypeError {
-		return new TypeError(`Invalid Iterable: ${JSON.stringify(value)}`);
-	}
-
-	/**
-	 * Builds an type error `Invalid AsyncIterable: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
-	 * @since v1.0.0
-	 */
-	public static buildAsyncIterableErr(value: unknown): TypeError {
-		return new TypeError(`Invalid AsyncIterable: ${JSON.stringify(value)}`);
+	public static buildErr(value: unknown, typeName: 'Iterable' | 'AsyncIterable' | 'NotIterable' | 'NotAsyncIterable'): TypeError {
+		return errorBuilder(value, typeName);
 	}
 
 	/* c8 ignore next 3 */
@@ -95,18 +113,20 @@ export class IterCore {
 	}
 }
 
+void 0 as unknown as typeof IterCore satisfies WithIsCore<IterFnMapping> & WithFromCore<IterFnMapping> & WithAssertCore<IterFnMapping>;
+
 /* c8 ignore next 999 */
 
 /**
  * Type guard that checks if a value is an iterable object.
- * @deprecated Use {@link IterCore.isIterable} instead
+ * @deprecated Use {@link IterCore.is} instead
  * @template T - The type of elements contained in the iterable.
  * @param {unknown} value - The value to check for iterability.
  * @returns {boolean} `true` if the value implements the `Iterable` interface; otherwise, `false`.
  * @since v0.4.5
  */
 export function isIterable<T>(value: unknown): value is Iterable<T> {
-	return IterCore.isIterable(value);
+	return IterCore.is(value);
 }
 
 /**
@@ -118,7 +138,7 @@ export function isIterable<T>(value: unknown): value is Iterable<T> {
  * @since v0.4.5
  */
 export function isNotIterable<T>(value: unknown): value is Exclude<unknown, Iterable<T>> {
-	return IterCore.isNotIterable(value);
+	return IterCore.isNot(value);
 }
 
 /**
@@ -130,7 +150,7 @@ export function isNotIterable<T>(value: unknown): value is Exclude<unknown, Iter
  * @since v0.4.5
  */
 export function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
-	return IterCore.isAsyncIterable(value);
+	return IterCore.isAsync(value);
 }
 
 /**
@@ -142,5 +162,5 @@ export function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
  * @since v0.4.5
  */
 export function isNotAsyncIterable<T>(value: unknown): value is Exclude<unknown, AsyncIterable<T>> {
-	return IterCore.isNotAsyncIterable(value);
+	return IterCore.isNotAsync(value);
 }

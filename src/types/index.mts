@@ -7,6 +7,7 @@ export * from './Nullable.mjs';
 export * from './Nullish.mjs';
 export * from './object.mjs';
 export * from './OneOf.mjs';
+export * from './predicate.mjs';
 export * from './Prettify.mjs';
 export * from './promise.mjs';
 export * from './String.mjs';

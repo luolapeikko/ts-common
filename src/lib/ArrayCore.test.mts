@@ -146,4 +146,9 @@ describe('ArrayCore', () => {
 			expect(() => A.assertNot(1)).to.not.throw();
 		});
 	});
+	describe('from', function () {
+		it('should create array from iterable', function () {
+			expect(A.from('test')).toEqual(['t', 'e', 's', 't']);
+		});
+	});
 });

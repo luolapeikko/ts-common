@@ -18,38 +18,24 @@ function toMsg(err: unknown): string {
 	return `Unknown error: ${msg}`;
 }
 /**
- * Unknown error class, used to wrap unknown thrown errors.
+ * Unknown error class, used to wrap unknown errors into a proper Error instance.
  * @augments TypeError
- * @see [toError](https://luolapeikko.github.io/ts-common/functions/toError.html)
+ * @see [ErrorCore.from](https://luolapeikko.github.io/ts-common/classes/ErrorCore.html#from)
  * @since v0.2.0
  * @example
  * } catch (err) {
- *   console.err(( err instanceof Error ? err : new UnknownError(err)).message);
- *   // or use the toError wrap function
- *   console.err(toError(err).message);
+ *   console.err(new UnknownError(err).message);
+ *   // or use the ErrorCore.from function to handle all error types
+ *   console.err(ErrorCore.from(err).message);
  * }
  */
 export class UnknownError extends TypeError {
-	/** Original unknown error value */
-	public readonly unknownError: unknown;
 	/**
 	 * Constructor for the UnknownError class.
-	 * @param {unknown} err - The unknown error value to wrap.
+	 * @param {unknown} cause - The unknown error value to wrap.
 	 */
-	constructor(err: unknown) {
-		super(toMsg(err));
-		this.unknownError = err;
+	constructor(cause: unknown) {
+		super(toMsg(cause), {cause});
 		this.name = 'UnknownError';
-		// try to copy some properties from the original object if exists
-		if (typeof err === 'object' && err !== null) {
-			this.stack = (err as Error).stack;
-			this.name = (err as Error).name || this.name;
-		}
-		if (!this.stack) {
-			Error.captureStackTrace(this, this.constructor);
-		}
-		// Set the prototype explicitly to maintain the correct prototype chain
-		// @see https://www.typescriptlang.org/docs/handbook/2/classes.html#extends-clauses
-		Object.setPrototypeOf(this, UnknownError.prototype);
 	}
 }

@@ -21,9 +21,9 @@ describe('Test UndefCore functions', function () {
 			expect(value).to.equal('test');
 		});
 		it('assert', function () {
-			expect(() => U.assertUndefined('test')).to.throw('Value is "test"');
-			expect(() => U.assertUndefined(null)).to.throw('Value is null');
-			expect(() => U.assertNotUndefined(undefined)).to.throw('Value is undefined');
+			expect(() => U.assertUndefined('test')).to.throw('Invalid Undefined value: "test"');
+			expect(() => U.assertUndefined(null)).to.throw('Invalid Undefined value: null');
+			expect(() => U.assertNotUndefined(undefined)).to.throw('Invalid NotUndefined value: undefined');
 		});
 	});
 	describe('Test Nullish functions', function () {
@@ -42,9 +42,9 @@ describe('Test UndefCore functions', function () {
 			expect(value).to.equal('test');
 		});
 		it('assert', function () {
-			expect(() => U.assertNullish('test')).to.throw('Value is "test"');
-			expect(() => U.assertNotNullish(null)).to.throw('Value is null');
-			expect(() => U.assertNotNullish(undefined)).to.throw('Value is undefined');
+			expect(() => U.assertNullish('test')).to.throw('Invalid Nullish value: "test"');
+			expect(() => U.assertNotNullish(null)).to.throw('Invalid NotNullish value: null');
+			expect(() => U.assertNotNullish(undefined)).to.throw('Invalid NotNullish value: undefined');
 		});
 	});
 	describe('Test Nullable functions', function () {
@@ -63,9 +63,9 @@ describe('Test UndefCore functions', function () {
 			expect(value).to.equal('test');
 		});
 		it('assert', function () {
-			expect(() => U.assertNull('test')).to.throw('Value is "test"');
-			expect(() => U.assertNull(undefined)).to.throw('Value is undefined');
-			expect(() => U.assertNotNull(null)).to.throw('Value is null');
+			expect(() => U.assertNull('test')).to.throw('Invalid Null value: "test"');
+			expect(() => U.assertNull(undefined)).to.throw('Invalid Null value: undefined');
+			expect(() => U.assertNotNull(null)).to.throw('Invalid NotNull value: null');
 		});
 	});
 });

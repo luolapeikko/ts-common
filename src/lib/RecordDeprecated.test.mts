@@ -1,7 +1,9 @@
 import {describe, expect, it} from 'vitest';
 import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
 import {arrayMap} from './ArrayCore.mjs';
-import {excludeKeys, includeKeys, objectEntries, objectKeys, objectValues, omit, pick, prop, propEquals, propNotEquals} from './RecordCore.mjs';
+import {excludeKeys, includeKeys, objectEntries, objectKeys, objectValues, omit, pick} from './RecordCore.mjs';
+import {prop} from './RecordMapper.mjs';
+import {propEquals, propNotEquals} from './RecordPredicate.mjs';
 
 type User = {
 	id: number;

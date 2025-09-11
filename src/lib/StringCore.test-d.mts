@@ -42,6 +42,21 @@ describe('Test StringCore functions', function () {
 			}
 			assertType<string>(value);
 		});
+		it('is with generics', function () {
+			const value = 'test' as string | undefined;
+			if (!S.is<string | undefined>(value)) {
+				throw new Error('value should be string');
+			}
+			assertType<string>(value);
+		});
+		it('is with bad generics', function () {
+			const value = 'test' as string | undefined;
+			// @ts-expect-error Argument of type 'string | undefined' is not assignable to parameter of type 'null | undefined'.
+			if (!S.is<null | undefined>(value)) {
+				throw new Error('value should be string');
+			}
+			assertType<string>(value);
+		});
 		it('isNot', function () {
 			const value = 'test' as string | undefined;
 			if (!S.isNot(value)) {
@@ -58,10 +73,11 @@ describe('Test StringCore functions', function () {
 		});
 		it('isNotEmpty', function () {
 			const value = 'test' as '' | 'test' | undefined;
-			if (!S.isNotEmpty(value)) {
-				throw new Error('value should be string');
+			if (S.isNotEmpty(value)) {
+				assertType<'test'>(value);
+			} else {
+				assertType<'' | undefined>(value);
 			}
-			assertType<NonEmptyString<'test'>>(value);
 		});
 		it('startsWith', function () {
 			const value = 'test' as string | undefined;

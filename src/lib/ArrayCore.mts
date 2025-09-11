@@ -1,12 +1,9 @@
 import {type Loadable, LoadableCore} from '../index.mjs';
+import type {AnyArrayType, ArrayFnMapping} from '../types/Array.mjs';
+import type {WithAssertCore, WithIsCore} from '../types/core.mjs';
 import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
-
-/**
- * Array map function with overload for NonEmptyArray
- * @template T - The type of the array
- * @since v0.2.0
- */
-export type AnyArrayType<T = unknown> = NonEmptyArray<T> | NonEmptyReadonlyArray<T> | T[] | readonly T[];
+import type {Nullish} from '../types/Nullish.mjs';
+import {IterCore} from './IterCore.mjs';
 
 /**
  * Array map callback function
@@ -26,39 +23,6 @@ export type MapCallback2<Target, Source> = (value: Source, index: number, array:
  * @since v1.0.0
  */
 export class ArrayCore {
-	/**
-	 * Array filter function with iterable which can be also iterable from a function callback.
-	 * @example
-	 * ArrayCore.filter(() => [1, 2, 3], (item) => item % 2 === 0); // [2]
-	 * @template T The type of the array
-	 * @param {Iterable<T> | (() => Iterable<T>)} list - The iterable to filter
-	 * @param {(item: T, index: number, array: T[]) => boolean} predicate - The predicate function
-	 * @returns {T[]} The filtered array
-	 * @since v1.0.0
-	 */
-	public static filter<T>(list: Iterable<T> | (() => Iterable<T>), predicate: (item: T, index: number, array: T[]) => boolean): T[] {
-		return Array.from(typeof list === 'function' ? list() : list).filter(predicate);
-	}
-
-	/**
-	 * Async filter version of Array.prototype.filter(), with the same signature as its synchronous counterpart.
-	 * @example
-	 * ArrayCore.asyncFilter([1, 2, 3], (item) => Promise.resolve(item % 2 === 0)); // [2]
-	 * @template T The type of the array
-	 * @param {Loadable<Iterable<T>>} list - The iterable to filter
-	 * @param {(item: T, index: number, array: T[]) => boolean | Promise<boolean>} asyncPredicate - The predicate function
-	 * @returns {Promise<T[]>} A promise that resolves to the filtered array
-	 * @since v1.0.0
-	 */
-	public static async asyncFilter<T>(
-		list: Loadable<Iterable<T>>,
-		asyncPredicate: (item: T, index: number, array: T[]) => boolean | Promise<boolean>,
-	): Promise<T[]> {
-		const array = Array.from(await LoadableCore.resolve(list));
-		const results = await Promise.all(array.map(asyncPredicate));
-		return array.filter((_, index) => results[index]);
-	}
-
 	/**
 	 * Array map function with overload for NonEmptyArray
 	 * @example
@@ -82,11 +46,32 @@ export class ArrayCore {
 	}
 
 	/**
+	 * Gets a valid `AnyArrayType` from a `AnyArrayType | null | undefined`, throws if the value is not a valid AnyArrayType.
+	 * @param {Nullish<AnyArrayType | Iterable>} value - The value to convert.
+	 * @returns {AnyArrayType} The valid AnyArrayType.
+	 * @since v1.0.2
+	 * @example
+	 * ArrayCore.from([1, 2, 3]); // [1, 2, 3]
+	 * ArrayCore.from(null); // throws
+	 * ArrayCore.from(undefined); // throws
+	 * const out = Array.from(data ?? []); // if data is null or undefined, return empty array
+	 */
+	public static from<T>(value: Nullish<AnyArrayType<T> | Iterable<T>>): AnyArrayType<T> {
+		if (IterCore.is(value)) {
+			value = Array.from(value); // ensure we have an array instance
+		}
+		ArrayCore.assert(value);
+		return value;
+	}
+
+	/**
 	 * Type guard to check if a value is an array
 	 * @param {unknown} array - The value to check
 	 * @returns {boolean} True if the value is an array; otherwise, false
 	 * @since v1.0.0
 	 */
+	public static is(array: unknown): array is AnyArrayType;
+	public static is<T>(array: T): array is Extract<T, AnyArrayType>;
 	public static is(array: unknown): array is AnyArrayType {
 		return Array.isArray(array);
 	}
@@ -126,11 +111,39 @@ export class ArrayCore {
 	}
 
 	/**
+	 * Assert that an array is empty
+	 * @param {unknown} value - The array to check
+	 * @throws {TypeError} If the array is not empty
+	 * @since v1.0.0
+	 */
+	public static assertEmpty(value: unknown): asserts value is AnyArrayType {
+		ArrayCore.assert(value); // first check if it's an array instance
+		if (value.length !== 0) {
+			throw ArrayCore.buildErr(value);
+		}
+	}
+
+	/**
+	 * Assert that an array is NOT empty
+	 * @param {unknown} value - The array to check
+	 * @throws {TypeError} If the array is empty
+	 * @since v1.0.0
+	 */
+	public static assertNotEmpty<T>(value: unknown): asserts value is Exclude<T, AnyArrayType> {
+		ArrayCore.assert(value); // first check if it's an array instance
+		if (value.length === 0) {
+			throw ArrayCore.buildErr(value);
+		}
+	}
+
+	/**
 	 * Type guard to check if an array is empty
 	 * @param {unknown} array - The array to check
 	 * @returns {boolean} True if the array is empty, false otherwise
 	 * @since v1.0.0
 	 */
+	public static isEmpty(array: unknown): array is [];
+	public static isEmpty<T>(array: T[]): array is [];
 	public static isEmpty(array: unknown): array is [] {
 		return Array.isArray(array) && array.length === 0;
 	}
@@ -141,8 +154,44 @@ export class ArrayCore {
 	 * @returns {boolean} True if the array is not empty, false otherwise
 	 * @since v1.0.0
 	 */
+	public static isNotEmpty(array: unknown): array is NonEmptyArray<unknown>;
+	public static isNotEmpty<T>(array: T[]): array is NonEmptyArray<T>;
 	public static isNotEmpty<T>(array: unknown): array is NonEmptyArray<T> {
 		return Array.isArray(array) && array.length > 0;
+	}
+
+	/**
+	 * Array filter function with iterable which can be also iterable from a function callback.
+	 * @example
+	 * ArrayCore.filter(() => [1, 2, 3], (item) => item % 2 === 0); // [2]
+	 * @template T The type of the array
+	 * @param {Iterable<T> | (() => Iterable<T>)} iterable - The iterable to filter
+	 * @param {(item: T, index: number, array: T[]) => boolean} predicate - The predicate function
+	 * @returns {T[]} The filtered array
+	 * @since v1.0.0
+	 */
+	public static filter<T>(iterable: Iterable<T> | (() => Iterable<T>), predicate: (item: T, index: number, array: T[]) => boolean): T[] {
+		const list = Array.from(typeof iterable === 'function' ? iterable() : iterable);
+		return list.filter(predicate);
+	}
+
+	/**
+	 * Async filter version of Array.prototype.filter(), with the same signature as its synchronous counterpart.
+	 * @example
+	 * ArrayCore.asyncFilter([1, 2, 3], (item) => Promise.resolve(item % 2 === 0)); // [2]
+	 * @template T The type of the array
+	 * @param {Loadable<Iterable<T>>} list - The iterable to filter
+	 * @param {(item: T, index: number, array: T[]) => boolean | Promise<boolean>} asyncPredicate - The predicate function
+	 * @returns {Promise<T[]>} A promise that resolves to the filtered array
+	 * @since v1.0.0
+	 */
+	public static async asyncFilter<T>(
+		list: Loadable<Iterable<T>>,
+		asyncPredicate: (item: T, index: number, array: T[]) => boolean | Promise<boolean>,
+	): Promise<T[]> {
+		const array = Array.from(await LoadableCore.resolve(list));
+		const results = await Promise.all(array.map(asyncPredicate));
+		return array.filter((_, index) => results[index]);
 	}
 
 	/**
@@ -160,6 +209,12 @@ export class ArrayCore {
 		throw new Error('This class should not be instantiated.');
 	}
 }
+
+/**
+ * Check that we have all methods implemented
+ */
+type BaseType = WithIsCore<ArrayFnMapping> & WithAssertCore<ArrayFnMapping>;
+void 0 as unknown as typeof ArrayCore satisfies BaseType;
 
 /* c8 ignore next 999 */
 

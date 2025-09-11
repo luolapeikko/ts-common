@@ -23,3 +23,5 @@ export type IfWritableKeys<T> = {
 export type IfReadonlyKeys<T> = {
 	[P in keyof T]-?: IfEquals<{[Q in P]: T[P]}, {-readonly [Q in P]: T[P]}, never, P>;
 }[keyof T];
+
+export type NonBaseType<T, Base, Strict extends Base> = Exclude<Extract<T, Base>, Strict>;
