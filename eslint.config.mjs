@@ -129,6 +129,8 @@ export default tseslint.config(
 			'sonarjs/function-return-type': 'off',
 			'sonarjs/deprecation': 'off',
 			'sonarjs/use-type-alias': 'off',
+			'sonarjs/different-types-comparison': 'off',
+			'sonarjs/todo-tag': 'off',
 		},
 	},
 	{

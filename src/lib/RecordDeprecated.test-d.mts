@@ -1,5 +1,7 @@
 import {assertType, describe, expect, it} from 'vitest';
-import {excludeKeys, includeKeys, omit, pick, prop, propEquals, propNotEquals} from './RecordCore.mjs';
+import {excludeKeys, includeKeys, omit, pick} from './RecordCore.mjs';
+import {prop} from './RecordMapper.mjs';
+import {propEquals, propNotEquals} from './RecordPredicate.mjs';
 
 type Data = {demo: string; value: number | null};
 type User = {

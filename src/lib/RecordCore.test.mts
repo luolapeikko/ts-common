@@ -37,7 +37,16 @@ describe('recordUtils', function () {
 			expect(() => R.assert(test)).not.to.throw();
 		});
 		it('should assert invalid RecordCore.assert types', function () {
-			expect(() => R.assert(null)).to.throw('Invalid object: null');
+			expect(() => R.assert(null)).to.throw('Invalid Record value: null');
+		});
+	});
+	describe('RecordCore.assertNot', function () {
+		it('should assert valid RecordCore.assertNot types', function () {
+			const test = {bar: 1, foo: 'foo', [propertySymbol]: true} as {foo: 'foo'; bar: 1; [propertySymbol]: true} | null;
+			expect(() => R.assertNot(test)).to.throw('Invalid Non-Record value: {"bar":1,"foo":"foo"}');
+		});
+		it('should assert invalid RecordCore.assertNot types', function () {
+			expect(() => R.assertNot(null)).not.to.throw();
 		});
 	});
 	describe('RecordCore.is Types', function () {
@@ -96,75 +105,6 @@ describe('recordUtils', function () {
 			expect(getFirst(['a', 'b', 'c'])).toBe('a');
 			const getSecond = R.onKey(1);
 			expect(getSecond(['x', 'y', 'z'])).toBe('y');
-		});
-	});
-	describe('onKeyEqual', () => {
-		it('returns a predicate function', () => {
-			const predicate = R.onKeyEqual('role', 'admin');
-			expect(typeof predicate).toBe('function');
-		});
-
-		it('correctly filters matching values', () => {
-			const isAdmin = R.onKeyEqual('role', 'admin');
-			const result = users.filter(isAdmin);
-			expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
-		});
-
-		it('handles optional properties', () => {
-			const isActive = R.onKeyEqual('active', true);
-			const result = users.filter(isActive);
-			expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
-		});
-
-		it('returns an empty array when no match is found', () => {
-			const hasNameDave = R.onKeyEqual('name', 'Dave');
-			const result = users.filter(hasNameDave);
-			expect(result).toEqual([]);
-		});
-
-		it('works with loosely typed records', () => {
-			const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
-			const isX = R.onKeyEqual('type', 'x');
-			const result = objects.filter(isX);
-			expect(result).toEqual([{type: 'x'}]);
-		});
-	});
-
-	describe('propNotEquals', () => {
-		it('returns a predicate function', () => {
-			const predicate = R.onKeyNotEqual('role', 'admin');
-			expect(typeof predicate).toBe('function');
-		});
-
-		it('correctly filters objects where the property does not match', () => {
-			const isNotAdmin = R.onKeyNotEqual('role', 'admin');
-			const result = users.filter(isNotAdmin);
-			expect(result).toEqual([
-				{id: 2, name: 'Bob', role: 'user'},
-				{id: 3, name: 'Carol', role: 'user', active: false},
-			]);
-		});
-
-		it('handles optional properties', () => {
-			const isNotActive = R.onKeyNotEqual('active', true);
-			const result = users.filter(isNotActive);
-			expect(result).toEqual([
-				{id: 2, name: 'Bob', role: 'user'},
-				{id: 3, name: 'Carol', role: 'user', active: false},
-			]);
-		});
-
-		it('returns all objects when no property matches the value', () => {
-			const notNamedDave = R.onKeyNotEqual('name', 'Dave');
-			const result = users.filter(notNamedDave);
-			expect(result).toEqual(users);
-		});
-
-		it('works with loosely typed records', () => {
-			const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
-			const isNotX = R.onKeyNotEqual('type', 'x');
-			const result = objects.filter(isNotX);
-			expect(result).toEqual([{}, {type: 'y'}]);
 		});
 	});
 	describe('objectKeys', function () {

@@ -11,27 +11,42 @@ type User = {
 	active?: boolean;
 };
 
-const object = {
+const testObject = {
 	foo: 'foo',
 	bar: 1,
 	[propertySymbol]: true,
 };
 
+type TestObject = typeof testObject;
+
 describe('object Key filtering', function () {
 	describe('isRecord Types', function () {
-		it('should assert valid isRecord types', function () {
-			const test = {bar: 1, foo: 'foo', [propertySymbol]: true} as {foo: 'foo'; bar: 1; [propertySymbol]: true} | null;
+		it('should check valid isRecord types', function () {
+			const test = testObject as TestObject | null;
 			if (R.is(test)) {
-				assertType<Record<string, unknown>>(test);
+				assertType<TestObject>(test);
 			}
+			if (R.is<TestObject | null | string>(test)) {
+				assertType<TestObject>(test);
+			}
+		});
+		it('should give error if strict type', function () {
+			const test = testObject as TestObject | null;
+			// @ts-expect-error Argument of type '{ foo: "foo"; bar: 1; [propertySymbol]: true; } | null' is not assignable to parameter of type 'string | null'.
+			R.is<null | string>(test);
 		});
 	});
 	describe('isNotRecord Types', function () {
-		it('should assert valid isNotRecord types', function () {
-			const test = null as {foo: 'foo'; bar: 1; [propertySymbol]: true} | null;
+		it('should check valid isNotRecord types', function () {
+			const test = null as TestObject | null;
 			if (R.isNot(test)) {
 				assertType<null>(test);
 			}
+		});
+		it('should give error if strict type', function () {
+			const test = null as TestObject | null;
+			// @ts-expect-error Argument of type '{ foo: "foo"; bar: 1; [propertySymbol]: true; } | null' is not assignable to parameter of type 'string | null'.
+			R.isNot<null | string>(test);
 		});
 	});
 	describe('pick from object', function () {
@@ -68,57 +83,41 @@ describe('object Key filtering', function () {
 			assertType<(target: any[]) => number>(getLength);
 		});
 	});
-	describe('Test onKeyEqual types', () => {
-		it('should be correct onKeyEqual types', () => {
-			const fn = R.onKeyEqual<User, 'role'>('role', 'user');
-			assertType<(obj: User) => boolean>(fn);
-			const looseFn = R.onKeyEqual('active', true);
-			assertType<(obj: {active?: boolean}) => boolean>(looseFn);
-		});
-	});
-	describe('Test onKey types', () => {
-		it('should be correct onKeyNotEqual types', () => {
-			const fn = R.onKeyNotEqual<User, 'role'>('role', 'user');
-			assertType<(obj: User) => boolean>(fn);
-			const looseFn = R.onKeyNotEqual('active', true);
-			assertType<(obj: {active?: boolean}) => boolean>(looseFn);
-		});
-	});
 	describe('includeKeys Types', function () {
 		it('should assert valid includeKeys types', function () {
-			assertType<Partial<typeof object>>(
-				includeKeys(object, (key, value) => {
+			assertType<Partial<typeof testObject>>(
+				includeKeys(testObject, (key, value) => {
 					assertType<'foo' | 'bar' | typeof propertySymbol>(key);
 					assertType<string | number | boolean>(value);
 					return false;
 				}),
 			);
-			assertType<{foo: string}>(includeKeys(object, ['foo']));
-			assertType<{foo: string}>(includeKeys(object, new Set<'foo'>(['foo'])));
-			assertType<{[propertySymbol]: boolean}>(includeKeys(object, [propertySymbol]));
+			assertType<{foo: string}>(includeKeys(testObject, ['foo']));
+			assertType<{foo: string}>(includeKeys(testObject, new Set<'foo'>(['foo'])));
+			assertType<{[propertySymbol]: boolean}>(includeKeys(testObject, [propertySymbol]));
 		});
 		it('should assert invalid includeKeys types', function () {
 			// @ts-expect-error Type 'undefined' is not assignable to type 'string'.
-			assertType<typeof object>(includeKeys(object, () => false));
+			assertType<typeof testObject>(includeKeys(testObject, () => false));
 			// @ts-expect-error Type 'Pick<{ foo: string; bar: number; [propertySymbol]: boolean; }, "foo">' is missing the following properties from type '{ foo: string; bar: number; [propertySymbol]: boolean; }': bar, [propertySymbol]
-			assertType<typeof object>(includeKeys(object, ['foo']));
+			assertType<typeof testObject>(includeKeys(testObject, ['foo']));
 			// @ts-expect-error Argument of type 'string[]' is not assignable to parameter of type 'KeyCallback<{ foo: string; bar: number; [propertySymbol]: boolean; }, "foo" | "bar" | unique symbol>'
-			assertType(includeKeys(object, ['baz']));
+			assertType(includeKeys(testObject, ['baz']));
 		});
 	});
 	describe('excludeKeys Types', function () {
 		it('should assert valid excludeKeys types', function () {
-			assertType<Partial<typeof object>>(
-				excludeKeys(object, (key, value) => {
+			assertType<Partial<typeof testObject>>(
+				excludeKeys(testObject, (key, value) => {
 					assertType<'foo' | 'bar' | typeof propertySymbol>(key);
 					assertType<string | number | boolean>(value);
 
 					return false;
 				}),
 			);
-			assertType<{bar: number; [propertySymbol]: boolean}>(excludeKeys(object, ['foo']));
-			assertType<{bar: number; [propertySymbol]: boolean}>(excludeKeys(object, new Set<'foo'>(['foo'])));
-			assertType<{foo: string; bar: number}>(excludeKeys(object, [propertySymbol]));
+			assertType<{bar: number; [propertySymbol]: boolean}>(excludeKeys(testObject, ['foo']));
+			assertType<{bar: number; [propertySymbol]: boolean}>(excludeKeys(testObject, new Set<'foo'>(['foo'])));
+			assertType<{foo: string; bar: number}>(excludeKeys(testObject, [propertySymbol]));
 
 			type UnionOfObjects = {type: 'foo'; foo: string} | {type: 'bar'; bar: number};
 			const object2: UnionOfObjects = {type: 'foo', foo: 'test'};
@@ -126,16 +125,16 @@ describe('object Key filtering', function () {
 		});
 		it('should assert invalid excludeKeys types', function () {
 			// @ts-expect-error Type 'undefined' is not assignable to type 'string'.
-			assertType<typeof object>(excludeKeys(object, () => false));
+			assertType<typeof testObject>(excludeKeys(testObject, () => false));
 			// @ts-expect-error Property 'foo' is missing in type 'Omit<{ foo: string; bar: number; [propertySymbol]: boolean; }, "foo">' but required in type '{ foo: string; bar: number; [propertySymbol]: boolean; }'
-			assertType<typeof object>(excludeKeys(object, ['foo']));
+			assertType<typeof testObject>(excludeKeys(testObject, ['foo']));
 			// @ts-expect-error Argument of type 'string[]' is not assignable to parameter of type 'KeyCallback<{ foo: string; bar: number; [propertySymbol]: boolean; }, unique symbol | "foo" | "bar">'
-			assertType(excludeKeys(object, ['baz']));
+			assertType(excludeKeys(testObject, ['baz']));
 		});
 	});
 	describe('entries Types', function () {
 		it('should assert valid entries types', function () {
-			const entries = R.entries(object);
+			const entries = R.entries(testObject);
 			assertType<(['bar', number] | ['foo', string] | [typeof propertySymbol, boolean])[]>(entries);
 		});
 		it('should assert invalid entries types', function () {
@@ -145,7 +144,7 @@ describe('object Key filtering', function () {
 	});
 	describe('values Types', function () {
 		it('should assert valid values types', function () {
-			const values = R.values(object);
+			const values = R.values(testObject);
 			assertType<(string | number | boolean)[]>(values);
 		});
 		it('should assert invalid values types', function () {
@@ -155,7 +154,7 @@ describe('object Key filtering', function () {
 	});
 	describe('keys Types', function () {
 		it('should assert valid keys types', function () {
-			const keys = R.keys(object);
+			const keys = R.keys(testObject);
 			assertType<('bar' | 'foo' | typeof propertySymbol)[]>(keys);
 		});
 		it('should assert invalid keys types', function () {

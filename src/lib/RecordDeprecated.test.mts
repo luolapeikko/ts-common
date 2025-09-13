@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
-import {arrayMap} from './ArrayCore.mjs';
-import {excludeKeys, includeKeys, objectEntries, objectKeys, objectValues, omit, pick, prop, propEquals, propNotEquals} from './RecordCore.mjs';
+import {excludeKeys, includeKeys, omit, pick, RecordCore} from './RecordCore.mjs';
+import {prop} from './RecordMapper.mjs';
+import {propEquals, propNotEquals} from './RecordPredicate.mjs';
 
 type User = {
 	id: number;
@@ -13,23 +13,7 @@ const user1: User = {id: 1, name: 'Alice', role: 'admin', active: true};
 const user2: User = {id: 2, name: 'Bob', role: 'user'};
 const users: User[] = [user1, user2, {id: 3, name: 'Carol', role: 'user', active: false}];
 
-const mapTest = {
-	key: {
-		value: 'value',
-	},
-} as const;
-
-type MixedType = {
-	readonly key: 'value';
-	normal: 'value2';
-};
-
-const demo: MixedType = {
-	key: 'value',
-	normal: 'value2',
-};
-
-describe('propUtils', () => {
+describe('deprecated propUtils', () => {
 	describe('prop', () => {
 		it('returns a function that extracts a property from an object', () => {
 			const getName = prop('name');
@@ -47,6 +31,26 @@ describe('propUtils', () => {
 			const getFirst = prop(0);
 			expect(getFirst(['a', 'b', 'c'])).toBe('a');
 			const getSecond = prop(1);
+			expect(getSecond(['x', 'y', 'z'])).toBe('y');
+		});
+	});
+	describe('RecordCore.onKey', () => {
+		it('returns a function that extracts a property from an object', () => {
+			const getName = RecordCore.onKey('name');
+			expect(getName(user1)).toBe('Alice');
+			expect(getName(user2)).toBe('Bob');
+		});
+
+		it('can be used with Array.map', () => {
+			const getId = RecordCore.onKey('id');
+			const ids = users.map(getId);
+			expect(ids).toEqual([1, 2, 3]);
+		});
+
+		it('works with arrays as target (index access)', () => {
+			const getFirst = RecordCore.onKey(0);
+			expect(getFirst(['a', 'b', 'c'])).toBe('a');
+			const getSecond = RecordCore.onKey(1);
 			expect(getSecond(['x', 'y', 'z'])).toBe('y');
 		});
 	});
@@ -78,6 +82,38 @@ describe('propUtils', () => {
 			it('works with loosely typed records', () => {
 				const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
 				const isX = propEquals('type', 'x');
+				const result = objects.filter(isX);
+				expect(result).toEqual([{type: 'x'}]);
+			});
+		});
+
+		describe('RecordCore.onKeyEqual', () => {
+			it('returns a predicate function', () => {
+				const predicate = RecordCore.onKeyEqual('role', 'admin');
+				expect(typeof predicate).toBe('function');
+			});
+
+			it('correctly filters matching values', () => {
+				const isAdmin = RecordCore.onKeyEqual('role', 'admin');
+				const result = users.filter(isAdmin);
+				expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
+			});
+
+			it('handles optional properties', () => {
+				const isActive = RecordCore.onKeyEqual('active', true);
+				const result = users.filter(isActive);
+				expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
+			});
+
+			it('returns an empty array when no match is found', () => {
+				const hasNameDave = RecordCore.onKeyEqual('name', 'Dave');
+				const result = users.filter(hasNameDave);
+				expect(result).toEqual([]);
+			});
+
+			it('works with loosely typed records', () => {
+				const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
+				const isX = RecordCore.onKeyEqual('type', 'x');
 				const result = objects.filter(isX);
 				expect(result).toEqual([{type: 'x'}]);
 			});
@@ -120,6 +156,44 @@ describe('propUtils', () => {
 				expect(result).toEqual([{}, {type: 'y'}]);
 			});
 		});
+
+		describe('RecordCore.onKeyNotEqual', () => {
+			it('returns a predicate function', () => {
+				const predicate = RecordCore.onKeyNotEqual('role', 'admin');
+				expect(typeof predicate).toBe('function');
+			});
+
+			it('correctly filters objects where the property does not match', () => {
+				const isNotAdmin = RecordCore.onKeyNotEqual('role', 'admin');
+				const result = users.filter(isNotAdmin);
+				expect(result).toEqual([
+					{id: 2, name: 'Bob', role: 'user'},
+					{id: 3, name: 'Carol', role: 'user', active: false},
+				]);
+			});
+
+			it('handles optional properties', () => {
+				const isNotActive = RecordCore.onKeyNotEqual('active', true);
+				const result = users.filter(isNotActive);
+				expect(result).toEqual([
+					{id: 2, name: 'Bob', role: 'user'},
+					{id: 3, name: 'Carol', role: 'user', active: false},
+				]);
+			});
+
+			it('returns all objects when no property matches the value', () => {
+				const notNamedDave = RecordCore.onKeyNotEqual('name', 'Dave');
+				const result = users.filter(notNamedDave);
+				expect(result).toEqual(users);
+			});
+
+			it('works with loosely typed records', () => {
+				const objects: Partial<Record<'type', string>>[] = [{type: 'x'}, {}, {type: 'y'}];
+				const isNotX = RecordCore.onKeyNotEqual('type', 'x');
+				const result = objects.filter(isNotX);
+				expect(result).toEqual([{}, {type: 'y'}]);
+			});
+		});
 	});
 	describe('pick from object', function () {
 		it('should pick value', function () {
@@ -132,6 +206,11 @@ describe('propUtils', () => {
 			const data = [{demo: 'hello', value: null}];
 			expect(data.map(pick(['value']))).to.eql([{value: null}]);
 			expect(data.map(pick(['demo']))).to.eql([{demo: 'hello'}]);
+		});
+		it('should RecordCore.pick from map', function () {
+			const data = [{demo: 'hello', value: null}];
+			expect(data.map(RecordCore.pick(['value']))).to.eql([{value: null}]);
+			expect(data.map(RecordCore.pick(['demo']))).to.eql([{demo: 'hello'}]);
 		});
 	});
 	describe('omit from object', function () {
@@ -146,69 +225,10 @@ describe('propUtils', () => {
 			expect(data.map(omit(['value']))).to.eql([{demo: 'hello'}]);
 			expect(data.map(omit(['demo']))).to.eql([{value: null}]);
 		});
-	});
-	describe('objectKeys', function () {
-		it('should have valid key array types', function () {
-			const _constData: NonEmptyReadonlyArray<'key'> = objectKeys({key: 'value'} as const);
-			expect(_constData).to.deep.equal(['key']);
-			const _looseData: 'key'[] = objectKeys({key: 'value'});
-			expect(_looseData).to.deep.equal(['key']);
-			const _baseData: string[] = objectKeys<Record<string, string>>({key: 'value'});
-			expect(_baseData).to.deep.equal(['key']);
-			const _mixedData: ('key' | 'normal')[] = objectKeys(demo);
-			expect(_mixedData).to.deep.equal(['key', 'normal']);
-			const _neverData: [] = objectKeys({});
-			expect(_neverData).to.deep.equal([]);
-		});
-	});
-	describe('objectValues', function () {
-		it('should have valid value array types', function () {
-			const _constData: NonEmptyReadonlyArray<'value'> = objectValues({key: 'value'} as const);
-			expect(_constData).to.deep.equal(['value']);
-			const _looseData: string[] = objectValues({key: 'value'});
-			expect(_looseData).to.deep.equal(['value']);
-			const _baseData: string[] = objectValues<Record<string, string>>({key: 'value'});
-			expect(_baseData).to.deep.equal(['value']);
-			const _mixedData: ('value' | 'value2')[] = objectValues(demo);
-			expect(_mixedData).to.deep.equal(['value', 'value2']);
-			const _neverData: [] = objectValues({});
-			expect(_neverData).to.deep.equal([]);
-		});
-	});
-	describe('objectEntries', function () {
-		it('should have valid entry types', function () {
-			const _constData: NonEmptyReadonlyArray<['key', 'value'] | ['key2', 'value2']> = objectEntries({key: 'value', key2: 'value2'} as const);
-			const entry = _constData.find(([key]) => key === 'key');
-			if (entry?.[0] === 'key') {
-				const _constPickValue: 'value' = entry[1]; // ensures the value type is matching 'value' for this tuple type
-				expect(_constPickValue).to.equal('value');
-			}
-			expect(_constData).to.deep.equal([
-				['key', 'value'],
-				['key2', 'value2'],
-			]);
-			const _looseData: ['key', string][] = objectEntries({key: 'value'});
-			expect(_looseData).to.deep.equal([['key', 'value']]);
-			const _baseData: [string, string][] = objectEntries<Record<string, string>>({key: 'value'});
-			expect(_baseData).to.deep.equal([['key', 'value']]);
-			const _optionalData: ['key', string | undefined][] = objectEntries<Partial<Record<'key', string>>>({key: 'value'});
-			expect(_optionalData).to.deep.equal([['key', 'value']]);
-			const _mixedData: (['key', 'value'] | ['normal', 'value2'])[] = objectEntries(demo);
-			expect(_mixedData).to.deep.equal([
-				['key', 'value'],
-				['normal', 'value2'],
-			]);
-			const _neverData: [] = objectEntries({});
-			expect(_neverData).to.deep.equal([]);
-		});
-	});
-	describe('objectEntries with map', function () {
-		it('should map valid types', function () {
-			const entries = objectEntries(mapTest);
-			const _constPickValue: NonEmptyArray<'value'> = arrayMap<'value', typeof entries>(entries, ([_key, value]) => value.value);
-			expect(_constPickValue).to.deep.equal(['value']);
-			const _constPickKey: NonEmptyArray<'key'> = arrayMap(entries, ([key, _value]) => key);
-			expect(_constPickKey).to.deep.equal(['key']);
+		it('should RecordCore.omit from map', function () {
+			const data = [{demo: 'hello', value: null}];
+			expect(data.map(RecordCore.omit(['value']))).to.eql([{demo: 'hello'}]);
+			expect(data.map(RecordCore.omit(['demo']))).to.eql([{value: null}]);
 		});
 	});
 	describe('includeKeys', () => {

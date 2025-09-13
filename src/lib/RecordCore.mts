@@ -1,4 +1,7 @@
+import type {CoreResult, IsGuard, IsNotGuard} from '../types/core.mjs';
 import type {ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
+import {RecordMapper} from './RecordMapper.mjs';
+import {RecordPredicate} from './RecordPredicate.mjs';
 
 /**
  * The core Object functions
@@ -6,13 +9,26 @@ import type {ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.m
  */
 export class RecordCore {
 	/**
+	 * Creates a {@link CoreResult} object which contains the result of the validation check.
+	 * @template T - The type of the value to check.
+	 * @param {unknown} value - The value to check.
+	 * @returns {CoreResult<IsGuard<T, Record<PropertyKey, any>>>} Core Result object.
+	 * @since v1.1.0
+	 */
+	public static result<T>(value: T): CoreResult<IsGuard<T, Record<PropertyKey, any>>> {
+		return typeof value === 'object' && value !== null && !Array.isArray(value)
+			? {success: true, data: value as IsGuard<T, Record<PropertyKey, any>>}
+			: {success: false, error: RecordCore.buildErr(value, 'Record')};
+	}
+
+	/**
 	 * Checks if the given value is an Record.
 	 * @param {unknown} value - The value to check.
 	 * @returns {boolean} True if the value is an object; otherwise, false.
 	 * @since v1.0.0
 	 */
-	public static is(value: unknown): value is Record<PropertyKey, unknown> {
-		return typeof value === 'object' && value !== null && !Array.isArray(value);
+	public static is<T = unknown>(value: T): value is IsGuard<T, Record<PropertyKey, any>> {
+		return RecordCore.result(value).success;
 	}
 
 	/**
@@ -21,8 +37,8 @@ export class RecordCore {
 	 * @returns {boolean} True if the value is not an object; otherwise, false.
 	 * @since v1.0.0
 	 */
-	public static isNot<T>(value: T): value is Exclude<T, Record<PropertyKey, unknown>> {
-		return !RecordCore.is(value);
+	public static isNot<T>(value: T): value is IsNotGuard<T, Record<PropertyKey, any>> {
+		return !RecordCore.result(value).success;
 	}
 
 	/**
@@ -31,9 +47,23 @@ export class RecordCore {
 	 * @throws {TypeError} If the value is not an object.
 	 * @since v1.0.0
 	 */
-	public static assert(value: unknown): asserts value is Record<PropertyKey, unknown> {
-		if (!RecordCore.is(value)) {
-			throw RecordCore.buildErr(value);
+	public static assert<T = undefined>(value: T): asserts value is IsGuard<T, Record<PropertyKey, any>> {
+		const res = RecordCore.result(value);
+		if (!res.success) {
+			throw res.error;
+		}
+	}
+
+	/**
+	 * Asserts that the given value is not an Record.
+	 * @param {unknown} value - The value to check.
+	 * @throws {TypeError} If the value is not an object.
+	 * @since v1.1.0
+	 */
+	public static assertNot<T>(value: T): asserts value is IsNotGuard<T, Record<PropertyKey, any>> {
+		const res = RecordCore.result(value);
+		if (res.success) {
+			throw RecordCore.buildErr(value, 'Non-Record');
 		}
 	}
 
@@ -100,6 +130,9 @@ export class RecordCore {
 	 * @since v1.0.0
 	 */
 	public static omit<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(keys: Iterable<K>, data: T): Omit<T, K>;
+	/**
+	 * @deprecated Use {@link RecordMapper.omit} for `omit` mapping.
+	 */
 	public static omit<K extends PropertyKey>(keys: Iterable<K>): <T extends Partial<Record<K, unknown>>>(value: T) => Omit<T, K>;
 	public static omit<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(
 		...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
@@ -133,6 +166,9 @@ export class RecordCore {
 	 * @since v1.0.0
 	 */
 	public static pick<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(keys: Iterable<K>, value: T): Pick<T, K>;
+	/**
+	 * @deprecated Use {@link RecordMapper.pick} for `pick` mapping.
+	 */
 	public static pick<K extends PropertyKey>(keys: Iterable<K>): <T extends Partial<Record<K, unknown>>>(value: T) => Pick<T, K>;
 	public static pick<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(
 		...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
@@ -154,6 +190,7 @@ export class RecordCore {
 	 * Creates a function that selects a specific property value from an object.
 	 *
 	 * Useful for use with arrays `map` function when extracting a single property from each object.
+	 * @deprecated Use {@link RecordMapper.prop} instead
 	 * @template K Property name in target that will be selected
 	 * @template T Object target from which the property will be selected
 	 * @param {K} key The property name to select
@@ -165,9 +202,12 @@ export class RecordCore {
 	 * @since v1.0.0
 	 */
 	public static onKey<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K];
+	/**
+	 * @deprecated Use {@link RecordMapper.prop} instead
+	 */
 	public static onKey<K extends PropertyKey>(key: K): <T extends Record<K, any>>(target: T) => T[K];
 	public static onKey<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K] {
-		return (target: T): T[K] => target[key];
+		return RecordMapper.prop(key);
 	}
 
 	/**
@@ -176,6 +216,7 @@ export class RecordCore {
 	 * Supports both strictly typed object structures and looser records with optional properties.
 	 *
 	 * Useful for filtering arrays of objects based on property values.
+	 * @deprecated use {@link RecordPredicate.propEq} instead.
 	 * @template T - The object type with known keys (strict overload).
 	 * @template K - The key of the property to compare.
 	 * @template V - The value type of the property (loose overload).
@@ -198,9 +239,12 @@ export class RecordCore {
 	 * @since v1.0.0
 	 */
 	public static onKeyEqual<T extends Record<PropertyKey, any>, K extends keyof T>(key: K, value: T[K]): (obj: T) => boolean;
+	/**
+	 * @deprecated use {@link RecordPredicate.propEq} instead
+	 */
 	public static onKeyEqual<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
 	public static onKeyEqual<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean {
-		return (obj: Partial<Record<K, V>>): boolean => obj[key] === value;
+		return RecordPredicate.propEq(key, value);
 	}
 
 	/**
@@ -209,6 +253,7 @@ export class RecordCore {
 	 * Supports both strictly typed object structures and looser records with optional properties.
 	 *
 	 * Useful for filtering arrays of objects where you want to exclude items with a certain property value.
+	 * @deprecated use {@link RecordPredicate.propNotEq} instead.
 	 * @template T - The object type with known keys (strict overload).
 	 * @template K - The key of the property to compare.
 	 * @template V - The value type of the property (loose overload).
@@ -231,19 +276,23 @@ export class RecordCore {
 	 * @since v1.0.0
 	 */
 	public static onKeyNotEqual<T extends Record<PropertyKey, any>, K extends keyof T>(key: K, value: T[K]): (obj: T) => boolean;
+	/**
+	 * @deprecated use {@link RecordPredicate.propNotEq} instead
+	 */
 	public static onKeyNotEqual<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
 	public static onKeyNotEqual<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean {
-		return (obj: Partial<Record<K, V>>): boolean => obj[key] !== value;
+		return RecordPredicate.propNotEq(key, value);
 	}
 
 	/**
 	 * Builds an type error `Invalid object: ${JSON.stringify(value)}`.
 	 * @param {unknown} value - The invalid value.
+	 * @param {'Object' | 'Non Object'} typeName - The type name.
 	 * @returns {TypeError} The created error.
 	 * @since v1.0.0
 	 */
-	public static buildErr(value: unknown): TypeError {
-		return new TypeError(`Invalid object: ${JSON.stringify(value)}`);
+	public static buildErr(value: unknown, typeName: 'Record' | 'Non-Record'): TypeError {
+		return new TypeError(`Invalid ${typeName} value: ${JSON.stringify(value)}`);
 	}
 
 	/* c8 ignore next 3 */
@@ -329,7 +378,8 @@ export function excludeKeys<O extends Record<PropertyKey, any>, K extends keyof 
 }
 
 /**
- * Type-safe Object.entries() with overload for NonEmptyArray
+ * Type-safe Object.entries() with overload for NonEmptyArray (To be removed)
+ * @todo To be removed
  * @deprecated Use {@link RecordCore.entries} instead
  * @example
  * const result1: NonEmptyReadonlyArray<['key', 'value']> = objectEntries({key: 'value'} as const);
@@ -341,12 +391,13 @@ export function excludeKeys<O extends Record<PropertyKey, any>, K extends keyof 
  * @returns {ObjectMappedArrayTuples<R>} Array of tuples with key and value
  * @since v0.2.0
  */
-export function objectEntries<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArrayTuples<R> {
+export function objectEntries<R extends Record<string | number | symbol, unknown>>(value: never): ObjectMappedArrayTuples<R> {
 	return RecordCore.entries<R>(value);
 }
 
 /**
- * Type-safe Object.keys() with overload for NonEmptyArray
+ * Type-safe Object.keys() with overload for NonEmptyArray (To be removed)
+ * @todo To be removed
  * @deprecated Use {@link RecordCore.keys} instead
  * @example
  * const result1: NonEmptyReadonlyArray<'key'> = objectKeys({key: 'value'} as const);
@@ -358,11 +409,12 @@ export function objectEntries<R extends Record<string | number | symbol, unknown
  * @returns {ObjectMappedArray<R, keyof R>} Array of object keys
  * @since v0.2.0
  */
-export function objectKeys<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, keyof R> {
+export function objectKeys<R extends Record<string | number | symbol, unknown>>(value: never): ObjectMappedArray<R, keyof R> {
 	return RecordCore.keys<R>(value);
 }
 /**
- * Type-safe Object.values() with overload for NonEmptyArray
+ * Type-safe Object.values() with overload for NonEmptyArray (To be removed)
+ * @todo To be removed
  * @deprecated Use {@link RecordCore.values} instead
  * @example
  * const result1: NonEmptyReadonlyArray<'value'> = objectValues({key: 'value'} as const);
@@ -373,119 +425,32 @@ export function objectKeys<R extends Record<string | number | symbol, unknown>>(
  * @returns {ObjectMappedArray<R, R[keyof R]>} Array of object values
  * @since v0.2.0
  */
-export function objectValues<R extends Record<string | number | symbol, unknown>>(value: R): ObjectMappedArray<R, R[keyof R]> {
+export function objectValues<R extends Record<string | number | symbol, unknown>>(value: never): ObjectMappedArray<R, R[keyof R]> {
 	return RecordCore.values<R>(value);
 }
 
 /**
- * Creates a function that selects a specific property value from an object.
- *
- * Useful for use with arrays `map` function when extracting a single property from each object.
- * @deprecated Use {@link RecordCore.onKey} instead or import as a R alias and `R.onKey`
- * @template K Property name in target that will be selected
- * @template T Object target from which the property will be selected
- * @param {K} key The property name to select
- * @param {T} target to select the property value from
- * @returns {(target: T) => T[K]} select value by key from the target
- * @example
- * type Data = {demo: string, value: number|null};
- * const dataArray: Data[] = [{demo: 'hello', value: null}];
- * const output: string[] = dataArray.map(pick(['demo']));
- * @since v0.4.2
- */
-export function prop<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K];
-export function prop<K extends PropertyKey>(key: K): <T extends Record<K, any>>(target: T) => T[K];
-export function prop<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K] {
-	return RecordCore.onKey(key);
-}
-
-/**
- * Creates a predicate function that checks whether a given object's property equals the specified value.
- *
- * Supports both strictly typed object structures and looser records with optional properties.
- *
- * Useful for filtering arrays of objects based on property values.
- * @deprecated Use {@link RecordCore.onKeyEqual} instead or import as a R alias and `R.onKeyEqual`
- * @template T - The object type with known keys (strict overload).
- * @template K - The key of the property to compare.
- * @template V - The value type of the property (loose overload).
- * @overload
- * @param {K} key - The property name to compare.
- * @param {T[K]} value - The value to match against.
- * @returns {(obj: T) => boolean} A predicate for use with arrays of type T.
- * @overload
- * @param {K} key - The property name to compare.
- * @param {V} value - The value to match against.
- * @returns {(obj: Partial<Record<K, V>>) => boolean} A predicate for objects with optional keys of type K.
- * @example
- * // Strict object structure
- * const isAdmin = propEquals<User, 'role'>('role', 'admin');
- * const admins = users.filter(isAdmin);
- * @example
- * // Loosely typed object
- * const isPublished = propEquals('status', 'published');
- * const publishedPosts = posts.filter(isPublished);
- * @since v0.4.2
- */
-export function propEquals<T extends Record<PropertyKey, any>, K extends keyof T>(key: K, value: T[K]): (obj: T) => boolean;
-export function propEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
-export function propEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean {
-	return RecordCore.onKeyEqual(key, value);
-}
-
-/**
- * Creates a predicate function that checks whether a given object's property does **not** equal the specified value.
- *
- * Supports both strictly typed object structures and looser records with optional properties.
- *
- * Useful for filtering arrays of objects where you want to exclude items with a certain property value.
- * @deprecated Use {@link RecordCore.onKeyNotEqual} instead or import as a R alias and `R.onKeyNotEqual`
- * @template T - The object type with known keys (strict overload).
- * @template K - The key of the property to compare.
- * @template V - The value type of the property (loose overload).
- * @overload
- * @param {K} key - The property name to compare.
- * @param {T[K]} value - The value to check against.
- * @returns {(obj: T) => boolean} A predicate function returning true when `obj[key] !== value`.
- * @overload
- * @param {K} key - The property name to compare.
- * @param {V} value - The value to check against.
- * @returns {(obj: Partial<Record<K, V>>) => boolean} A predicate for loosely typed or optional-key objects.
- * @example
- * // Strict object structure
- * const isNotAdmin = propNotEquals<User, 'role'>('role', 'admin');
- * const nonAdmins = users.filter(isNotAdmin);
- * @example
- * // Loosely typed object
- * const isNotPublished = propNotEquals('status', 'published');
- * const draftsOrArchived = posts.filter(isNotPublished);
- */
-export function propNotEquals<T extends Record<PropertyKey, any>, K extends keyof T>(key: K, value: T[K]): (obj: T) => boolean;
-export function propNotEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean;
-export function propNotEquals<V, K extends PropertyKey>(key: K, value: V): (obj: Partial<Record<K, V>>) => boolean {
-	return RecordCore.onKeyNotEqual(key, value);
-}
-
-/**
- * Type guard that checks if a value is a record (i.e., an object with property keys).
+ * Type guard that checks if a value is a record (To be removed).
+ * @todo To be removed
  * @deprecated Use {@link RecordCore.is} instead
  * @param {unknown} value - The value to check.
  * @returns {boolean} True if the value is a non-null object and not an array; otherwise, false.
  * @since v0.4.6
  */
-export function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
+export function isRecord(value: never): value is never {
 	return RecordCore.is(value);
 }
 
 /**
- * Type guard that checks if a value is not a record (i.e., not an object with property keys).
+ * Type guard that checks if a value is not a record (To be removed).
+ * @todo To be removed
  * @deprecated Use {@link RecordCore.isNot} instead
  * @template T - The type of the value to check.
  * @param {T} value - The value to test.
  * @returns {boolean} `true` if the value is not a record; otherwise, `false`.
  * @since v0.4.6
  */
-export function isNotRecord<T>(value: T): value is Exclude<T, Record<PropertyKey, unknown>> {
+export function isNotRecord<T>(value: never): value is never {
 	return RecordCore.isNot<T>(value);
 }
 
@@ -506,12 +471,15 @@ export function isNotRecord<T>(value: T): value is Exclude<T, Record<PropertyKey
  * @since v0.4.0
  */
 export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(keys: Iterable<K>, value: T): Pick<T, K>;
+/**
+ * @deprecated Use {@link RecordMapper.pick} instead
+ */
 export function pick<K extends PropertyKey>(keys: Iterable<K>): <T extends Partial<Record<K, unknown>>>(value: T) => Pick<T, K>;
 export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(
 	...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
 ): Record<PropertyKey, unknown> | ((current: T) => Record<PropertyKey, unknown>) {
 	if (args.length === 1) {
-		return RecordCore.pick<K>(...args);
+		return RecordMapper.pick<K>(...args);
 	}
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	return RecordCore.pick<K, T>(args[0], args[1] as any);
@@ -534,12 +502,15 @@ export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>
  * @since v0.4.1
  */
 export function omit<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(keys: Iterable<K>, data: T): Omit<T, K>;
+/**
+ * @deprecated Use {@link RecordMapper.omit} instead
+ */
 export function omit<K extends PropertyKey>(keys: Iterable<K>): <T extends Partial<Record<K, unknown>>>(value: T) => Omit<T, K>;
 export function omit<K extends PropertyKey, T extends Partial<Record<K, unknown>>>(
 	...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
 ): Record<PropertyKey, unknown> | ((current: T) => Record<PropertyKey, unknown>) {
 	if (args.length === 1) {
-		return RecordCore.omit<K>(...args);
+		return RecordMapper.omit<K>(...args);
 	}
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	return RecordCore.omit<K, T>(args[0], args[1] as any);
