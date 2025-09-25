@@ -1,5 +1,6 @@
 export * from './AsJson.mjs';
 export * from './core.mjs';
+export * from './ErrorBuildFunc.mjs';
 export * from './helper.mjs';
 export * from './Loadable.mjs';
 export * from './NonEmpty.mjs';

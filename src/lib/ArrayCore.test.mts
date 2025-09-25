@@ -139,10 +139,10 @@ describe('ArrayCore', () => {
 		});
 		it('should assert if value is array', function () {
 			expect(() => A.assert([1, 2, 3])).to.not.throw();
-			expect(() => A.assert(1)).to.throw('Invalid Array: 1');
+			expect(() => A.assert(1)).to.throw('Invalid value: expected an Array, got 1 [number]');
 		});
 		it('should assertNot if value is array', function () {
-			expect(() => A.assertNot([1, 2, 3])).to.throw('Invalid Array: [1,2,3]');
+			expect(() => A.assertNot([1, 2, 3])).to.throw('Invalid value: expected not an Array, got [1,2,3] [object]');
 			expect(() => A.assertNot(1)).to.not.throw();
 		});
 	});

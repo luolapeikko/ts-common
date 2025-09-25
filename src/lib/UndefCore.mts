@@ -1,6 +1,7 @@
 import {type Nullable} from '../types/Nullable.mjs';
 import {type Nullish} from '../types/Nullish.mjs';
 import {type Undef} from '../types/Undef.mjs';
+import {valueErrorBuilder} from './errorUtils.mjs';
 
 /**
  * Core class for all nullish types.
@@ -45,7 +46,7 @@ export class UndefCore {
 	 */
 	public static assertUndefined(value: unknown): asserts value is undefined {
 		if (!UndefCore.isUndefined(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildValueErr(value, 'Undefined');
 		}
 	}
 
@@ -63,7 +64,7 @@ export class UndefCore {
 	 */
 	public static assertNotUndefined<T>(value: Undef<T>): asserts value is T {
 		if (!UndefCore.isNotUndefined(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildValueErr(value, 'Undefined', true);
 		}
 	}
 
@@ -92,7 +93,7 @@ export class UndefCore {
 	 */
 	public static assertNull(value: unknown): asserts value is null {
 		if (!UndefCore.isNull(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildValueErr(value, 'Null');
 		}
 	}
 
@@ -124,7 +125,7 @@ export class UndefCore {
 	 */
 	public static assertNotNull<T>(value: Nullable<T>): asserts value is T {
 		if (!UndefCore.isNotNull(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildValueErr(value, 'Null', true);
 		}
 	}
 
@@ -153,7 +154,7 @@ export class UndefCore {
 	 */
 	public static assertNullish(value: unknown): asserts value is null | undefined {
 		if (!UndefCore.isNullish(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildValueErr(value, 'Nullish');
 		}
 	}
 
@@ -185,18 +186,20 @@ export class UndefCore {
 	 */
 	public static assertNotNullish(value: unknown): asserts value is NonNullable<unknown> {
 		if (!UndefCore.isNotNullish(value)) {
-			throw UndefCore.buildErr(value);
+			throw UndefCore.buildValueErr(value, 'Nullish', true);
 		}
 	}
 
 	/**
-	 * Builds an type error `Value is ${JSON.stringify(value)}`.
+	 * Builds value error.
 	 * @param {unknown} value - The invalid value.
+	 * @param {'Undefined' | 'Null' | 'Nullish'} typeName - The expected type name.
+	 * @param {boolean} [isNot] - Whether the error should be for `!${typeName}`.
 	 * @returns {TypeError} The created error.
-	 * @since v0.5.0
+	 * @since v1.1.2
 	 */
-	public static buildErr(value: unknown): TypeError {
-		return new TypeError(`Value is ${JSON.stringify(value)}`);
+	public static buildValueErr(value: unknown, typeName: 'Undefined' | 'Null' | 'Nullish', isNot = false): TypeError {
+		return valueErrorBuilder(value, typeName, isNot);
 	}
 
 	/* c8 ignore next 3 */

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/await-thenable */
 import {type Loadable, LoadableCore} from '../index.mjs';
 import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
+import {valueErrorBuilder} from './errorUtils.mjs';
 
 /**
  * Array map function with overload for NonEmptyArray
@@ -109,7 +111,7 @@ export class ArrayCore {
 	 */
 	public static assert(value: unknown): asserts value is AnyArrayType {
 		if (!Array.isArray(value)) {
-			throw ArrayCore.buildErr(value);
+			throw ArrayCore.buildValueErr(value, 'Array');
 		}
 	}
 
@@ -121,7 +123,7 @@ export class ArrayCore {
 	 */
 	public static assertNot<T>(value: unknown): asserts value is Exclude<T, AnyArrayType> {
 		if (Array.isArray(value)) {
-			throw ArrayCore.buildErr(value);
+			throw ArrayCore.buildValueErr(value, 'Array', true);
 		}
 	}
 
@@ -146,13 +148,15 @@ export class ArrayCore {
 	}
 
 	/**
-	 * Builds an type error `Invalid Iterable: ${JSON.stringify(value)}`.
+	 * Builds value error.
 	 * @param {unknown} value - The invalid value.
+	 * @param {'Array'} typeName - The expected type name.
+	 * @param {boolean} [isNot] - Whether the error should be for `!${typeName}`.
 	 * @returns {TypeError} The created error.
-	 * @since v1.0.0
+	 * @since v1.1.2
 	 */
-	public static buildErr(value: unknown): TypeError {
-		return new TypeError(`Invalid Array: ${JSON.stringify(value)}`);
+	public static buildValueErr(value: unknown, typeName: 'Array', isNot = false): TypeError {
+		return valueErrorBuilder(value, typeName, isNot);
 	}
 
 	/* c8 ignore next 3 */

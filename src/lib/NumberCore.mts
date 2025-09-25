@@ -1,4 +1,5 @@
 import {type Nullish} from '../types/Nullish.mjs';
+import {errorMessageBuilder, valueErrorBuilder} from './errorUtils.mjs';
 
 /**
  * The core Number functions.
@@ -52,7 +53,7 @@ export class NumberCore {
 	 */
 	public static assertNumber(value: unknown): asserts value is number {
 		if (!NumberCore.isNumber(value)) {
-			throw NumberCore.buildNumberErr(value);
+			throw NumberCore.buildValueErr(value, 'Number');
 		}
 	}
 
@@ -97,7 +98,7 @@ export class NumberCore {
 	 */
 	public static assertFloat(value: unknown): asserts value is number {
 		if (!NumberCore.isFloat(value)) {
-			throw NumberCore.buildFloatErr(value);
+			throw NumberCore.buildValueErr(value, 'Float');
 		}
 	}
 
@@ -142,7 +143,7 @@ export class NumberCore {
 	 */
 	public static assertInt(value: unknown): asserts value is number {
 		if (!NumberCore.isInt(value)) {
-			throw NumberCore.buildIntErr(value);
+			throw NumberCore.buildValueErr(value, 'Integer');
 		}
 	}
 
@@ -181,60 +182,8 @@ export class NumberCore {
 	 */
 	public static assertBigInt(value: unknown): asserts value is bigint {
 		if (!NumberCore.isBigInt(value)) {
-			throw NumberCore.buildBigIntErr(value);
+			throw NumberCore.buildValueErr(value, 'BigInt');
 		}
-	}
-
-	/**
-	 * Builds an type error `Invalid integer: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
-	 * @since v1.0.4
-	 */
-	public static buildNumberErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.numberErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.numberErrMsg(`${JSON.stringify(value)}`));
-	}
-
-	/**
-	 * Builds an type error `Invalid float: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
-	 * @since v1.0.0
-	 */
-	public static buildFloatErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.floatErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.floatErrMsg(`${JSON.stringify(value)}`));
-	}
-
-	/**
-	 * Builds an type error `Invalid integer: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
-	 * @since v1.0.0
-	 */
-	public static buildIntErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.intErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.intErrMsg(`${JSON.stringify(value)}`));
-	}
-
-	/**
-	 * Builds an type error `Invalid bigint: ${JSON.stringify(value)}`.
-	 * @param {unknown} value - The invalid value.
-	 * @returns {TypeError} The created error.
-	 * @since v1.0.4
-	 */
-	public static buildBigIntErr(value: unknown): TypeError {
-		if (typeof value === 'number' && isNaN(value)) {
-			return new TypeError(NumberCore.bigIntErrMsg(`NaN`));
-		}
-		return new TypeError(NumberCore.bigIntErrMsg(`${JSON.stringify(value)}`));
 	}
 
 	private static handleNumberFrom(value: unknown, args?: {orgValue: unknown; buildErr: (value: unknown) => TypeError}): number {
@@ -246,14 +195,14 @@ export class NumberCore {
 		}
 		if (typeof value === 'string') {
 			return NumberCore.isFloatStringLike(value)
-				? NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: NumberCore.buildNumberErr})
-				: NumberCore.handleIntFrom(parseFloat(value), {orgValue: value, buildErr: NumberCore.buildNumberErr});
+				? NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Number')})
+				: NumberCore.handleIntFrom(parseFloat(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Number')});
 		}
 		if (NumberCore.isBigInt(value)) {
-			NumberCore.assertBigIntSafeNumber(value, NumberCore.numberErrMsg(`${value} exceeds safe number range.`));
-			return NumberCore.handleIntFrom(Number(value), {orgValue: value, buildErr: NumberCore.buildNumberErr});
+			NumberCore.assertBigIntSafeNumber(value, NumberCore.buildCustomError(`${value} exceeds safe number range.`, 'Number'));
+			return NumberCore.handleIntFrom(Number(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Number')});
 		}
-		throw args ? args.buildErr(args.orgValue) : NumberCore.buildNumberErr(value);
+		throw args ? args.buildErr(args.orgValue) : NumberCore.buildValueErr(value, 'Number');
 	}
 
 	private static handleFloatFrom(value: unknown, args?: {orgValue: unknown; buildErr: (value: unknown) => TypeError}): number {
@@ -264,13 +213,13 @@ export class NumberCore {
 			return value + 0.0; // force int to float
 		}
 		if (typeof value === 'string') {
-			return NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: NumberCore.buildFloatErr});
+			return NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Float')});
 		}
 		if (NumberCore.isBigInt(value)) {
-			NumberCore.assertBigIntSafeNumber(value, NumberCore.floatErrMsg(`${value} exceeds safe float range.`));
+			NumberCore.assertBigIntSafeNumber(value, NumberCore.buildCustomError(`${value} exceeds safe float range.`, 'Float'));
 			return NumberCore.handleFloatFrom(Number(value));
 		}
-		throw args ? args.buildErr(args.orgValue) : NumberCore.buildFloatErr(value);
+		throw args ? args.buildErr(args.orgValue) : NumberCore.buildValueErr(value, 'Float');
 	}
 
 	private static handleIntFrom(value: unknown, args?: {orgValue: unknown; buildErr: (value: unknown) => TypeError}): number {
@@ -281,13 +230,13 @@ export class NumberCore {
 			return Math.trunc(value);
 		}
 		if (typeof value === 'string') {
-			return NumberCore.handleIntFrom(parseInt(value), {orgValue: value, buildErr: NumberCore.buildIntErr});
+			return NumberCore.handleIntFrom(parseInt(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Integer')});
 		}
 		if (NumberCore.isBigInt(value)) {
-			NumberCore.assertBigIntSafeNumber(value, NumberCore.intErrMsg(`${value} exceeds safe integer range.`));
+			NumberCore.assertBigIntSafeNumber(value, NumberCore.buildCustomError(`${value} exceeds safe integer range.`, 'Integer'));
 			return Number(value);
 		}
-		throw args ? args.buildErr(args.orgValue) : NumberCore.buildIntErr(value);
+		throw args ? args.buildErr(args.orgValue) : NumberCore.buildValueErr(value, 'Integer');
 	}
 
 	private static assertBigIntSafeNumber(value: bigint, errorMessage: string): asserts value is bigint {
@@ -309,7 +258,7 @@ export class NumberCore {
 		if (typeof value === 'string') {
 			return NumberCore.castBigInt(value);
 		}
-		throw NumberCore.buildBigIntErr(orgValue ?? value);
+		throw NumberCore.buildValueErr(orgValue ?? value, 'BigInt');
 	}
 
 	private static castBigInt(value: string | number): bigint {
@@ -319,7 +268,7 @@ export class NumberCore {
 			// eslint-disable-next-line sonarjs/no-ignored-exceptions
 		} catch (_error) {
 			// BigInt throws SyntaxError on invalid string, override it with TypeError
-			throw NumberCore.buildBigIntErr(value);
+			throw NumberCore.buildValueErr(value, 'BigInt');
 		}
 	}
 
@@ -327,20 +276,20 @@ export class NumberCore {
 		return typeof value === 'string' && NumberCore.floatOnlyRegex.test(value.trim());
 	}
 
-	private static bigIntErrMsg(message: string): string {
-		return `Invalid bigint: ${message}`;
+	/**
+	 * Builds value error.
+	 * @param {unknown} value - The invalid value.
+	 * @param {'Number' | 'Integer' | 'Float' | 'BigInt'} typeName - The expected type name.
+	 * @param {boolean} [isNot] - Whether the error should be for `!${typeName}`.
+	 * @returns {TypeError} The created error.
+	 * @since v1.1.2
+	 */
+	public static buildValueErr(value: unknown, typeName: 'Number' | 'Integer' | 'Float' | 'BigInt', isNot = false): TypeError {
+		return valueErrorBuilder(value, typeName, isNot);
 	}
 
-	private static floatErrMsg(message: string): string {
-		return `Invalid float: ${message}`;
-	}
-
-	private static intErrMsg(message: string): string {
-		return `Invalid integer: ${message}`;
-	}
-
-	private static numberErrMsg(message: string): string {
-		return `Invalid number: ${message}`;
+	public static buildCustomError(message: string, typeName: 'Number' | 'Integer' | 'Float' | 'BigInt'): string {
+		return errorMessageBuilder(typeName, message);
 	}
 
 	/* c8 ignore next 3 */

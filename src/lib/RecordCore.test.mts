@@ -37,13 +37,13 @@ describe('recordUtils', function () {
 			expect(() => R.assert(test)).not.to.throw();
 		});
 		it('should assert invalid RecordCore.assert types', function () {
-			expect(() => R.assert(null)).to.throw('Invalid Record value: null');
+			expect(() => R.assert(null)).to.throw('Invalid value: expected a Record, got null [object]');
 		});
 	});
 	describe('RecordCore.assertNot', function () {
 		it('should assert valid RecordCore.assertNot types', function () {
 			const test = {bar: 1, foo: 'foo', [propertySymbol]: true} as {foo: 'foo'; bar: 1; [propertySymbol]: true} | null;
-			expect(() => R.assertNot(test)).to.throw('Invalid Non-Record value: {"bar":1,"foo":"foo"}');
+			expect(() => R.assertNot(test)).to.throw('Invalid value: expected not a Record, got {"bar":1,"foo":"foo"} [object]');
 		});
 		it('should assert invalid RecordCore.assertNot types', function () {
 			expect(() => R.assertNot(null)).not.to.throw();

@@ -21,9 +21,9 @@ describe('Test UndefCore functions', function () {
 			expect(value).to.equal('test');
 		});
 		it('assert', function () {
-			expect(() => U.assertUndefined('test')).to.throw('Value is "test"');
-			expect(() => U.assertUndefined(null)).to.throw('Value is null');
-			expect(() => U.assertNotUndefined(undefined)).to.throw('Value is undefined');
+			expect(() => U.assertUndefined('test')).to.throw('Invalid value: expected an Undefined, got "test" [string]');
+			expect(() => U.assertUndefined(null)).to.throw('Invalid value: expected an Undefined, got null [object]');
+			expect(() => U.assertNotUndefined(undefined)).to.throw('Invalid value: expected not an Undefined, got [undefined]');
 		});
 	});
 	describe('Test Nullish functions', function () {
@@ -42,9 +42,9 @@ describe('Test UndefCore functions', function () {
 			expect(value).to.equal('test');
 		});
 		it('assert', function () {
-			expect(() => U.assertNullish('test')).to.throw('Value is "test"');
-			expect(() => U.assertNotNullish(null)).to.throw('Value is null');
-			expect(() => U.assertNotNullish(undefined)).to.throw('Value is undefined');
+			expect(() => U.assertNullish('test')).to.throw('Invalid value: expected a Nullish, got "test" [string]');
+			expect(() => U.assertNotNullish(null)).to.throw('Invalid value: expected not a Nullish, got null [object]');
+			expect(() => U.assertNotNullish(undefined)).to.throw('Invalid value: expected not a Nullish, got [undefined]');
 		});
 	});
 	describe('Test Nullable functions', function () {
@@ -63,9 +63,9 @@ describe('Test UndefCore functions', function () {
 			expect(value).to.equal('test');
 		});
 		it('assert', function () {
-			expect(() => U.assertNull('test')).to.throw('Value is "test"');
-			expect(() => U.assertNull(undefined)).to.throw('Value is undefined');
-			expect(() => U.assertNotNull(null)).to.throw('Value is null');
+			expect(() => U.assertNull('test')).to.throw('Invalid value: expected a Null, got "test" [string]');
+			expect(() => U.assertNull(undefined)).to.throw('Invalid value: expected a Null, got [undefined]');
+			expect(() => U.assertNotNull(null)).to.throw('Invalid value: expected not a Null, got null [object]');
 		});
 	});
 });

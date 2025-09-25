@@ -1,4 +1,5 @@
 import {type EmptyString, type NonEmptyString, type NumberString, type PrefixedString, type SuffixedString} from '../types/String.mjs';
+import {valueErrorBuilder} from './errorUtils.mjs';
 
 /**
  * The `StringCore` class provides utility functions for string type checks and assertions.
@@ -150,7 +151,7 @@ export class StringCore {
 	 */
 	public static assert(value: unknown): asserts value is string {
 		if (!StringCore.is(value)) {
-			throw StringCore.buildErr(value);
+			throw StringCore.buildValueErr(value, 'String');
 		}
 	}
 
@@ -162,31 +163,49 @@ export class StringCore {
 	 */
 	public static assertNot<T>(value: unknown): asserts value is Exclude<T, string> {
 		if (StringCore.is(value)) {
-			throw StringCore.buildErr(value);
+			throw StringCore.buildValueErr(value, 'String', true);
 		}
 	}
 
 	/**
-	 * Builds an type error `Invalid string: ${JSON.stringify(value)}`.
+	 * Builds value error.
 	 * @param {unknown} value - The invalid value.
+	 * @param {'String' | 'EmptyString' | 'LowerCaseString' | 'UpperCaseString' | 'NumberString'} typeName - The expected type name.
+	 * @param {boolean} [isNot] - Whether the error should be for `!${typeName}`.
 	 * @returns {TypeError} The created error.
-	 * @since v1.0.2
+	 * @since v1.1.2
 	 */
-	public static buildErr(value: unknown): TypeError {
-		switch (typeof value) {
-			case 'number':
-				return new TypeError(`Invalid string: ${value} [Number]`);
-			case 'boolean':
-				return new TypeError(`Invalid string: ${value} [Boolean]`);
-			case 'bigint':
-				return new TypeError(`Invalid string: ${value} [BigInt]`);
-			case 'function':
-				return new TypeError(`Invalid string: [Function]`);
-			case 'symbol':
-				return new TypeError(`Invalid string: [Symbol]`);
-			default:
-				return new TypeError(`Invalid string: ${JSON.stringify(value)}`);
+	public static buildValueErr(
+		value: unknown,
+		typeName: 'String' | 'EmptyString' | 'LowerCaseString' | 'UpperCaseString' | 'NumberString',
+		isNot = false,
+	): TypeError {
+		return valueErrorBuilder(value, typeName, isNot);
+	}
+
+	/**
+	 * Gets the article for the given word.
+	 * @param {string} word - Word to get the article for.
+	 * @returns {'a' | 'an'} The article for the word.
+	 */
+	public static getArticle(word: string): 'a' | 'an' {
+		const lower = word.trim().toLowerCase();
+		// Some common exceptions where the first letter doesn't match the sound
+		const specialCases = [
+			/^honest/,
+			/^hour/,
+			/^heir/,
+			/^herb\b/, // American English
+		];
+		if (specialCases.some((re) => re.test(lower))) {
+			return 'an';
 		}
+		const hardU = [/^uni/, /^user/, /^usual/]; // words where "u" sounds like "you"
+		if (hardU.some((re) => re.test(lower))) {
+			return 'a';
+		}
+		// Default: check first character
+		return /^[aeiou]/.test(lower) ? 'an' : 'a';
 	}
 
 	/* c8 ignore next 3 */

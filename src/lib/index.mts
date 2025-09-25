@@ -1,5 +1,6 @@
 export * from './ArrayCore.mjs';
 export * from './ErrorCore.mjs';
+export * from './errorUtils.mjs';
 export * from './IterCore.mjs';
 export * from './LoadableCore.mjs';
 export * from './NumberCore.mjs';

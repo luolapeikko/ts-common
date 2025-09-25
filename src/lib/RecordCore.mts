@@ -1,5 +1,6 @@
 import type {CoreResult, IsGuard, IsNotGuard} from '../types/core.mjs';
 import type {ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
+import {valueErrorBuilder} from './errorUtils.mjs';
 import {RecordMapper} from './RecordMapper.mjs';
 import {RecordPredicate} from './RecordPredicate.mjs';
 
@@ -18,7 +19,7 @@ export class RecordCore {
 	public static result<T>(value: T): CoreResult<IsGuard<T, Record<PropertyKey, any>>> {
 		return typeof value === 'object' && value !== null && !Array.isArray(value)
 			? {success: true, data: value as IsGuard<T, Record<PropertyKey, any>>}
-			: {success: false, error: RecordCore.buildErr(value, 'Record')};
+			: {success: false, error: RecordCore.buildValueErr(value, 'Record')};
 	}
 
 	/**
@@ -63,7 +64,7 @@ export class RecordCore {
 	public static assertNot<T>(value: T): asserts value is IsNotGuard<T, Record<PropertyKey, any>> {
 		const res = RecordCore.result(value);
 		if (res.success) {
-			throw RecordCore.buildErr(value, 'Non-Record');
+			throw RecordCore.buildValueErr(value, 'Record', true);
 		}
 	}
 
@@ -285,14 +286,15 @@ export class RecordCore {
 	}
 
 	/**
-	 * Builds an type error `Invalid object: ${JSON.stringify(value)}`.
+	 * Builds value error.
 	 * @param {unknown} value - The invalid value.
 	 * @param {'Object' | 'Non Object'} typeName - The type name.
+	 * @param {boolean} [isNot] - Whether the error should be for `!${typeName}`.
 	 * @returns {TypeError} The created error.
-	 * @since v1.0.0
+	 * @since v1.1.2
 	 */
-	public static buildErr(value: unknown, typeName: 'Record' | 'Non-Record'): TypeError {
-		return new TypeError(`Invalid ${typeName} value: ${JSON.stringify(value)}`);
+	public static buildValueErr(value: unknown, typeName: 'Record', isNot = false): TypeError {
+		return valueErrorBuilder(value, typeName, isNot);
 	}
 
 	/* c8 ignore next 3 */

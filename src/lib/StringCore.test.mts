@@ -78,12 +78,18 @@ describe('Test StringCore functions', function () {
 	});
 	it('assert', function () {
 		expect(() => S.assert('test')).not.toThrow();
-		expect(() => S.assert(123)).toThrow('Invalid string: 123 [Number]');
-		expect(() => S.assert(123n)).toThrow('Invalid string: 123 [BigInt]');
-		expect(() => S.assert(false)).toThrow('Invalid string: false [Boolean]');
-		expect(() => S.assert(() => {})).toThrow('Invalid string: [Function]');
-		expect(() => S.assert(Symbol())).toThrow('Invalid string: [Symbol]');
-		expect(() => S.assertNot('test')).toThrow('Invalid string: "test"');
+		expect(() => S.assert(123)).toThrow('Invalid value: expected a String, got 123 [number]');
+		expect(() => S.assert(123n)).toThrow('Invalid value: expected a String, got 123 [bigint]');
+		expect(() => S.assert(false)).toThrow('Invalid value: expected a String, got false [boolean]');
+		expect(() => S.assert(() => {})).toThrow('Invalid value: expected a String, got [function]');
+		expect(() => S.assert(Symbol())).toThrow('Invalid value: expected a String, got [symbol]');
+		expect(() => S.assertNot('test')).toThrow('Invalid value: expected not a String, got "test" [string]');
 		expect(() => S.assertNot(123)).not.toThrow();
+	});
+	it('getArticle', function () {
+		expect(S.getArticle('test')).to.be.eq('a');
+		expect(S.getArticle('honest')).to.be.eq('an');
+		expect(S.getArticle('user')).to.be.eq('a');
+		expect(S.getArticle('auto')).to.be.eq('an');
 	});
 });
