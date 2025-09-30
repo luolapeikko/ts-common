@@ -16,7 +16,7 @@ export class RecordCore {
 	 * @returns {CoreResult<IsGuard<T, Record<PropertyKey, any>>>} Core Result object.
 	 * @since v1.1.0
 	 */
-	public static result<T>(value: T): CoreResult<IsGuard<T, Record<PropertyKey, any>>> {
+	public static result<T>(value: T): CoreResult<IsGuard<T, Record<PropertyKey, any>>, TypeError> {
 		return typeof value === 'object' && value !== null && !Array.isArray(value)
 			? {success: true, data: value as IsGuard<T, Record<PropertyKey, any>>}
 			: {success: false, error: RecordCore.buildValueErr(value, 'Record')};

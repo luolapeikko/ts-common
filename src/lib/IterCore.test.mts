@@ -17,10 +17,10 @@ describe('iterableUtils', function () {
 	});
 	describe('assertIterable', function () {
 		it('should throw for non-iterable objects', function () {
-			expect(() => I.assertIterable(undefined)).to.throw('Invalid Iterable: undefined');
-			expect(() => I.assertIterable(null)).to.throw('Invalid Iterable: null');
-			expect(() => I.assertIterable(42)).to.throw('Invalid Iterable: 42');
-			expect(() => I.assertIterable({})).to.throw('Invalid Iterable: {}');
+			expect(() => I.assertIterable(undefined)).to.throw('Invalid value: expected an Iterable, got [undefined]');
+			expect(() => I.assertIterable(null)).to.throw('Invalid value: expected an Iterable, got null [object]');
+			expect(() => I.assertIterable(42)).to.throw('Invalid value: expected an Iterable, got 42 [number]');
+			expect(() => I.assertIterable({})).to.throw('Invalid value: expected an Iterable, got {} [object]');
 		});
 		it('should not throw for iterable objects', function () {
 			expect(() => I.assertIterable([])).not.to.throw();
@@ -63,12 +63,24 @@ describe('iterableUtils', function () {
 	});
 	describe('assertAsyncIterable', function () {
 		it('should throw for non-async iterable objects', function () {
-			expect(() => I.assertAsyncIterable([])).to.throw('Invalid AsyncIterable: []');
-			expect(() => I.assertAsyncIterable(new Set([]))).to.throw('Invalid AsyncIterable: {}');
-			expect(() => I.assertAsyncIterable(new Map())).to.throw('Invalid AsyncIterable: {}');
+			expect(() => I.assertAsyncIterable([])).to.throw('Invalid value: expected an AsyncIterable, got [] [object]');
+			expect(() => I.assertAsyncIterable(new Set([]))).to.throw('Invalid value: expected an AsyncIterable, got {} [object]');
+			expect(() => I.assertAsyncIterable(new Map())).to.throw('Invalid value: expected an AsyncIterable, got {} [object]');
 		});
 		it('should not throw for async iterable objects', function () {
 			expect(() => I.assertAsyncIterable((async function* () {})())).not.to.throw();
+		});
+	});
+	describe('oneOf', function () {
+		it('should check if the iterable contains the value', function () {
+			expect(I.oneOf([1, 2, 3], 2)).to.equal(true);
+			expect(I.oneOf([1, 2, 3], 4)).to.equal(false);
+		});
+	});
+	describe('notOneOf', function () {
+		it('should check if the iterable does not contain the value', function () {
+			expect(I.notOneOf([1, 2, 3], 2)).to.equal(false);
+			expect(I.notOneOf([1, 2, 3], 4)).to.equal(true);
 		});
 	});
 });

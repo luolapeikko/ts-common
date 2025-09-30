@@ -2,12 +2,12 @@ export type IsGuard<T, Base> = T extends Base ? Extract<T, Base> : Base;
 
 export type IsNotGuard<T, Base> = Exclude<T, Base>;
 
-export type CoreResult<T> =
+export type CoreResult<Ok, Err> =
 	| {
 			success: true;
-			data: T;
+			data: Ok;
 	  }
 	| {
 			success: false;
-			error: TypeError;
+			error: Err;
 	  };

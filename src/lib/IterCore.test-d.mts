@@ -90,4 +90,13 @@ describe('iterableUtils', () => {
 			}
 		});
 	});
+	describe('iterableResult', () => {
+		it('should narrow non-async iterable types', () => {
+			const data = [1, 2, 3] as number[] | null;
+			const result = I.iterableResult(data);
+			if (result.success) {
+				assertType<Iterable<number>>(result.data);
+			}
+		});
+	});
 });
