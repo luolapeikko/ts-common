@@ -2,6 +2,12 @@ import {type IfReadonlyKeys, type IfWritableKeys} from './helper.mjs';
 import {type NonEmptyReadonlyArray} from './NonEmptyArray.mjs';
 
 /**
+ * Type for any record
+ * @since v1.1.4
+ */
+export type AnyRecord = Record<PropertyKey, any>;
+
+/**
  * Check if a record is readonly or never
  * @template R - The object shape
  * @since v0.1.2

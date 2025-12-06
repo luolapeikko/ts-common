@@ -36,18 +36,32 @@ describe('Test StringCore functions', function () {
 	});
 	describe('Function tests', function () {
 		it('is', function () {
-			const value = 'test' as string | undefined;
+			const value = 'test' as string | undefined | object;
 			if (!S.is(value)) {
 				throw new Error('value should be string');
 			}
 			assertType<string>(value);
 		});
+		it('is strict', function () {
+			const value = 'test' as const;
+			if (!S.is<string>(value)) {
+				throw new Error('value should be string');
+			}
+			assertType<'test'>(value);
+		});
 		it('isNot', function () {
-			const value = 'test' as string | undefined;
+			const value = 'test' as string | undefined | object;
 			if (!S.isNot(value)) {
 				throw new Error('value should not be string');
 			}
-			assertType<undefined>(value);
+			assertType<undefined | object>(value);
+		});
+		it('isNot strict', function () {
+			const value = 'test' as 'test' | undefined | object;
+			if (!S.isNot(value)) {
+				throw new Error('value should not be string');
+			}
+			assertType<undefined | object>(value);
 		});
 		it('isEmpty', function () {
 			const value = 'test' as string | undefined;
@@ -61,7 +75,7 @@ describe('Test StringCore functions', function () {
 			if (!S.isNotEmpty(value)) {
 				throw new Error('value should be string');
 			}
-			assertType<NonEmptyString<'test'>>(value);
+			assertType<'test' | undefined>(value);
 		});
 		it('startsWith', function () {
 			const value = 'test' as string | undefined;

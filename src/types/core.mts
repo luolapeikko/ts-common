@@ -1,4 +1,4 @@
-export type IsGuard<T, Base> = T extends Base ? Extract<T, Base> : Base;
+export type IsGuard<T, Base> = Extract<T, Base>;
 
 export type IsNotGuard<T, Base> = Exclude<T, Base>;
 

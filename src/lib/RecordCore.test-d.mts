@@ -31,9 +31,15 @@ describe('object Key filtering', function () {
 			}
 		});
 		it('should give error if strict type', function () {
-			const test = testObject as TestObject | null;
-			// @ts-expect-error Argument of type '{ foo: "foo"; bar: 1; [propertySymbol]: true; } | null' is not assignable to parameter of type 'string | null'.
-			R.is<null | string>(test);
+			const test = null as 'hello' | null;
+			// @ts-expect-error Type '"hello"' is not assignable to type 'NoInfer<{ foo: string; bar: number; [propertySymbol]: boolean; }> | Nullish<Record<PropertyKey, any>>'
+			R.is<TestObject>(test);
+		});
+		it('should give error if strict type', function () {
+			const test = null as 'hello' | null;
+			if (R.is(test)) {
+				assertType<TestObject>(test);
+			}
 		});
 	});
 	describe('isNotRecord Types', function () {

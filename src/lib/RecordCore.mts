@@ -1,5 +1,5 @@
 import type {CoreResult, IsGuard, IsNotGuard} from '../types/core.mjs';
-import type {ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
+import type {AnyRecord, ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
 import {valueErrorBuilder} from './errorUtils.mjs';
 import {RecordMapper} from './RecordMapper.mjs';
 import {RecordPredicate} from './RecordPredicate.mjs';
@@ -16,9 +16,9 @@ export class RecordCore {
 	 * @returns {CoreResult<IsGuard<T, Record<PropertyKey, any>>>} Core Result object.
 	 * @since v1.1.0
 	 */
-	public static result<T>(value: T): CoreResult<IsGuard<T, Record<PropertyKey, any>>, TypeError> {
+	public static result<T = unknown>(value: T): CoreResult<IsGuard<T, AnyRecord>, TypeError> {
 		return typeof value === 'object' && value !== null && !Array.isArray(value)
-			? {success: true, data: value as IsGuard<T, Record<PropertyKey, any>>}
+			? {success: true, data: value as IsGuard<T, AnyRecord>}
 			: {success: false, error: RecordCore.buildValueErr(value, 'Record')};
 	}
 
@@ -28,7 +28,7 @@ export class RecordCore {
 	 * @returns {boolean} True if the value is an object; otherwise, false.
 	 * @since v1.0.0
 	 */
-	public static is<T = unknown>(value: T): value is IsGuard<T, Record<PropertyKey, any>> {
+	public static is<T = unknown>(value: T): value is IsGuard<T, AnyRecord> {
 		return RecordCore.result(value).success;
 	}
 
@@ -38,7 +38,7 @@ export class RecordCore {
 	 * @returns {boolean} True if the value is not an object; otherwise, false.
 	 * @since v1.0.0
 	 */
-	public static isNot<T>(value: T): value is IsNotGuard<T, Record<PropertyKey, any>> {
+	public static isNot<T = unknown>(value: T): value is IsNotGuard<T, AnyRecord> {
 		return !RecordCore.result(value).success;
 	}
 
@@ -48,7 +48,7 @@ export class RecordCore {
 	 * @throws {TypeError} If the value is not an object.
 	 * @since v1.0.0
 	 */
-	public static assert<T = undefined>(value: T): asserts value is IsGuard<T, Record<PropertyKey, any>> {
+	public static assert<T = undefined>(value: T): asserts value is IsGuard<T, AnyRecord> {
 		const res = RecordCore.result(value);
 		if (!res.success) {
 			throw res.error;
@@ -61,7 +61,7 @@ export class RecordCore {
 	 * @throws {TypeError} If the value is not an object.
 	 * @since v1.1.0
 	 */
-	public static assertNot<T>(value: T): asserts value is IsNotGuard<T, Record<PropertyKey, any>> {
+	public static assertNot<T>(value: T): asserts value is IsNotGuard<T, AnyRecord> {
 		const res = RecordCore.result(value);
 		if (res.success) {
 			throw RecordCore.buildValueErr(value, 'Record', true);

@@ -1,4 +1,5 @@
-import {type EmptyString, type NonEmptyString, type NumberString, type PrefixedString, type SuffixedString} from '../types/String.mjs';
+import type {IsGuard, IsNotGuard} from '../types/core.mjs';
+import {type EmptyString, type NumberString, type PrefixedString, type SuffixedString} from '../types/String.mjs';
 import {valueErrorBuilder} from './errorUtils.mjs';
 
 /**
@@ -12,7 +13,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is a `string`; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static is(value: unknown): value is string {
+	public static is<T = unknown>(value: T): value is IsGuard<T, string> {
 		return typeof value === 'string';
 	}
 
@@ -22,7 +23,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is not a `string`; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isNot<T>(value: T): value is Exclude<T, string> {
+	public static isNot<T = unknown>(value: T): value is IsNotGuard<T, string> {
 		return !StringCore.is(value);
 	}
 
@@ -36,7 +37,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is an empty string; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isEmpty(value: unknown): value is EmptyString {
+	public static isEmpty<T = unknown>(value: T): value is IsGuard<T, EmptyString> {
 		return StringCore.is(value) && value.length === 0;
 	}
 
@@ -50,7 +51,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is a not empty string; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isNotEmpty<T>(value: T): value is NonEmptyString<T> {
+	public static isNotEmpty<T = unknown>(value: T): value is IsNotGuard<T, EmptyString> {
 		return StringCore.is(value) && value.length > 0;
 	}
 
@@ -64,7 +65,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is a lowercase string; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isLowerCase(value: unknown): value is Lowercase<string> {
+	public static isLowerCase<T = unknown>(value: T): value is IsGuard<T, Lowercase<string>> {
 		return StringCore.is(value) && value === value.toLowerCase();
 	}
 
@@ -78,7 +79,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is an uppercase string; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isUpperCase(value: unknown): value is Uppercase<string> {
+	public static isUpperCase<T = unknown>(value: T): value is IsGuard<T, Uppercase<string>> {
 		return StringCore.is(value) && value === value.toUpperCase();
 	}
 
@@ -94,7 +95,7 @@ export class StringCore {
 	 * @returns {value is PrefixedString<P>} `true` if the value starts with the prefix; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static startsWith<P extends string>(value: unknown, prefix: P): value is PrefixedString<P> {
+	public static startsWith<T = unknown, P extends string = string>(value: T, prefix: P): value is IsGuard<T, PrefixedString<P>> {
 		return StringCore.is(value) && value.startsWith(prefix);
 	}
 
@@ -110,7 +111,7 @@ export class StringCore {
 	 * @returns {value is SuffixedString<S>} `true` if the value ends with the suffix; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static endsWith<S extends string>(value: unknown, suffix: S): value is SuffixedString<S> {
+	public static endsWith<T = unknown, S extends string = string>(value: T, suffix: S): value is IsGuard<T, SuffixedString<S>> {
 		return StringCore.is(value) && value.endsWith(suffix);
 	}
 
@@ -125,7 +126,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is a numeric string; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isNumeric(value: unknown): value is NumberString {
+	public static isNumeric<T = unknown>(value: T): value is IsGuard<T, NumberString> {
 		return StringCore.is(value) && !isNaN(Number(value)) && !isNaN(parseFloat(value));
 	}
 
@@ -139,7 +140,7 @@ export class StringCore {
 	 * @returns {boolean} `true` if the value is not a numeric string; otherwise, `false`.
 	 * @since v1.0.2
 	 */
-	public static isNotNumeric<T>(value: T): value is Exclude<T, NumberString> {
+	public static isNotNumeric<T = unknown>(value: T): value is IsNotGuard<T, NumberString> {
 		return !StringCore.isNumeric(value);
 	}
 
@@ -149,7 +150,7 @@ export class StringCore {
 	 * @throws {TypeError} If the value is not a string.
 	 * @since v1.0.2
 	 */
-	public static assert(value: unknown): asserts value is string {
+	public static assert<T = unknown>(value: T): asserts value is IsGuard<T, string> {
 		if (!StringCore.is(value)) {
 			throw StringCore.buildValueErr(value, 'String');
 		}
@@ -161,7 +162,7 @@ export class StringCore {
 	 * @throws {TypeError} If the value is a string.
 	 * @since v1.0.2
 	 */
-	public static assertNot<T>(value: unknown): asserts value is Exclude<T, string> {
+	public static assertNot<T = unknown>(value: unknown): asserts value is IsNotGuard<T, string> {
 		if (StringCore.is(value)) {
 			throw StringCore.buildValueErr(value, 'String', true);
 		}
