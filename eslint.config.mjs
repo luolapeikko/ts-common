@@ -21,7 +21,7 @@ export default tseslint.config(
 	sonarjs.configs.recommended,
 	prettierRecommended,
 	{
-		ignores: ['**/dist', '**/node_modules', '**/.github', '**/.nyc_output', '**/vite.config.mts', 'eslint.config.mjs'],
+		ignores: ['**/dist', '**/node_modules', '**/.github', '**/.nyc_output', '**/vite.config.mts', 'eslint.config.mjs','**/docs'],
 	},
 	{
 		plugins: {

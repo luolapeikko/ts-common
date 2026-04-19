@@ -68,3 +68,6 @@ test-results.xml
 
 # IDEs
 .idea
+
+# docs
+docs
