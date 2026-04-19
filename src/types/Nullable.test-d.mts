@@ -1,6 +1,6 @@
 import {assertType, describe, it} from 'vitest';
 import {UndefCore as U} from '../lib/UndefCore.mjs';
-import {type Nullable} from './Nullable.mjs';
+import type {Nullable} from './Nullable.mjs';
 
 describe('Test Null types', function () {
 	describe('Nullable', function () {

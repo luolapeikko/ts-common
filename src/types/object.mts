@@ -1,5 +1,5 @@
-import {type IfReadonlyKeys, type IfWritableKeys} from './helper.mjs';
-import {type NonEmptyReadonlyArray} from './NonEmptyArray.mjs';
+import type {IfReadonlyKeys, IfWritableKeys} from './helper.mjs';
+import type {NonEmptyReadonlyArray} from './NonEmptyArray.mjs';
 
 /**
  * Type for any record

@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {type Loadable} from '../types/Loadable.mjs';
+import type {Loadable} from '../types/Loadable.mjs';
 import {LoadableCore as L} from './LoadableCore.mjs';
 
 describe('loadableUtils', function () {

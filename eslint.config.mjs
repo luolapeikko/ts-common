@@ -21,7 +21,7 @@ export default tseslint.config(
 	sonarjs.configs.recommended,
 	prettierRecommended,
 	{
-		ignores: ['**/dist', '**/node_modules', '**/.github', '**/.nyc_output', '**/vite.config.mts', 'eslint.config.mjs','**/docs'],
+		ignores: ['**/dist', '**/node_modules', '**/.github', '**/.nyc_output', '**/vite.config.mts', 'eslint.config.mjs', '**/docs', '**/coverage'],
 	},
 	{
 		plugins: {
@@ -131,6 +131,7 @@ export default tseslint.config(
 			'sonarjs/use-type-alias': 'off',
 			'sonarjs/different-types-comparison': 'off',
 			'sonarjs/todo-tag': 'off',
+			'@typescript-eslint/no-unsafe-member-access': 'off'
 		},
 	},
 	{
@@ -146,7 +147,7 @@ export default tseslint.config(
 			'sort-keys': 'off',
 			'sonarjs/assertions-in-tests': 'off',
 			'sonarjs/no-duplicate-string': 'off',
-			'sonarjs/no-nested-functions': "off",
+			'sonarjs/no-nested-functions': 'off',
 			'@cspell/spellchecker': 'off',
 		},
 	},

@@ -1,5 +1,5 @@
 import type {IsGuard, IsNotGuard} from '../types/core.mjs';
-import {type EmptyString, type NumberString, type PrefixedString, type SuffixedString} from '../types/String.mjs';
+import type {EmptyString, NumberString, PrefixedString, SuffixedString} from '../types/String.mjs';
 import {valueErrorBuilder} from './errorUtils.mjs';
 
 /**

@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
+import type {NonEmptyArray, NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
 import {ArrayCore as A} from './ArrayCore.mjs';
 import {excludeKeys, includeKeys, RecordCore as R} from './RecordCore.mjs';
 

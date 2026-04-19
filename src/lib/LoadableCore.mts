@@ -1,4 +1,4 @@
-import {type Loadable, type ResolvedLoadable} from '../types/Loadable.mjs';
+import type {Loadable, ResolvedLoadable} from '../types/Loadable.mjs';
 
 /**
  * The core Loadable functions.

@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {type EmptyString, type NonEmptyString, type NumberString, type PrefixedString, type SuffixedString} from '../types/String.mjs';
+import type {EmptyString, NonEmptyString, NumberString, PrefixedString, SuffixedString} from '../types/String.mjs';
 import {StringCore as S} from './StringCore.mjs';
 
 describe('Test StringCore functions', function () {

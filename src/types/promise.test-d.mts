@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {type Awaitable} from './promise.mjs';
+import type {Awaitable} from './promise.mjs';
 
 describe('Test Awaitable type', function () {
 	describe('Test valid Awaitable types', function () {

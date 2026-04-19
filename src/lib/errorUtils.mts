@@ -1,4 +1,4 @@
-import {type ErrorBuildFunc} from '../types/ErrorBuildFunc.mjs';
+import type {ErrorBuildFunc} from '../types/ErrorBuildFunc.mjs';
 import {StringCore} from './StringCore.mjs';
 
 function getStringValue(value: unknown): string | undefined {
@@ -13,6 +13,10 @@ function getStringValue(value: unknown): string | undefined {
 		default:
 			return JSON.stringify(value);
 	}
+}
+
+export function errorPrefixBuilder(message: string): string {
+	return `Invalid value: ${message}`;
 }
 
 /**
@@ -40,8 +44,4 @@ export function setCustomErrorStringFunction(customErrorFunction: ErrorBuildFunc
 
 export function valueErrorBuilder(value: unknown, typeName: string, isNot: boolean): TypeError {
 	return new TypeError(errorBuilderInstance(value, typeName, isNot));
-}
-
-export function errorPrefixBuilder(message: string) {
-	return `Invalid value: ${message}`;
 }

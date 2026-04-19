@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {type Undef} from '../types/Undef.mjs';
+import type {Undef} from '../types/Undef.mjs';
 import {UndefCore as U} from './UndefCore.mjs';
 
 describe('Test NullCore functions', function () {

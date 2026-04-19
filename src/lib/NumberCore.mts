@@ -1,4 +1,4 @@
-import {type Nullish} from '../types/Nullish.mjs';
+import type {Nullish} from '../types/Nullish.mjs';
 import {errorMessageBuilder, valueErrorBuilder} from './errorUtils.mjs';
 
 /**

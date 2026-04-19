@@ -1,6 +1,6 @@
 import {assertType, describe, it} from 'vitest';
 import {isNotUndef, isUndef} from '../lib/UndefCore.mjs';
-import {type Undef} from './Undef.mjs';
+import type {Undef} from './Undef.mjs';
 
 describe('Test undefined type guards', function () {
 	describe('Test Nullish type', function () {

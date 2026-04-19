@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {type NonEmptyArray} from '../types/NonEmptyArray.mjs';
+import type {NonEmptyArray} from '../types/NonEmptyArray.mjs';
 import {arrayMap, asyncFilter} from './ArrayCore.mjs';
 
 const looseValue: Record<'value', string> = {

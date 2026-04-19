@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
-import {type Nullable} from '../types/Nullable.mjs';
-import {type Nullish} from '../types/Nullish.mjs';
-import {type Undef} from '../types/Undef.mjs';
+import type {Nullable} from '../types/Nullable.mjs';
+import type {Nullish} from '../types/Nullish.mjs';
+import type {Undef} from '../types/Undef.mjs';
 import {UndefCore as U} from './UndefCore.mjs';
 
 describe('Test UndefCore functions', function () {

@@ -1,6 +1,6 @@
-import {type Nullable} from '../types/Nullable.mjs';
-import {type Nullish} from '../types/Nullish.mjs';
-import {type Undef} from '../types/Undef.mjs';
+import type {Nullable} from '../types/Nullable.mjs';
+import type {Nullish} from '../types/Nullish.mjs';
+import type {Undef} from '../types/Undef.mjs';
 import {valueErrorBuilder} from './errorUtils.mjs';
 
 /**

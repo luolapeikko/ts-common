@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/await-thenable */
-import {type Loadable, LoadableCore} from '../index.mjs';
-import {type NonEmptyArray, type NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
+import type {Loadable} from '../types/Loadable.mjs';
+import type {NonEmptyArray, NonEmptyReadonlyArray} from '../types/NonEmptyArray.mjs';
 import {valueErrorBuilder} from './errorUtils.mjs';
+import {LoadableCore} from './LoadableCore.mjs';
 
 /**
  * Array map function with overload for NonEmptyArray
@@ -178,10 +179,7 @@ export class ArrayCore {
  * @returns {Promise<T[]>} A promise that resolves to the filtered array
  * @since v0.3.7
  */
-export async function asyncFilter<T>(
-	list: Loadable<Iterable<T>>,
-	asyncPredicate: (item: T, index: number, array: T[]) => boolean | Promise<boolean>,
-): Promise<T[]> {
+export function asyncFilter<T>(list: Loadable<Iterable<T>>, asyncPredicate: (item: T, index: number, array: T[]) => boolean | Promise<boolean>): Promise<T[]> {
 	return ArrayCore.asyncFilter(list, asyncPredicate);
 }
 

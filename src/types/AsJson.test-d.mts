@@ -1,5 +1,5 @@
 import {assertType, describe, it} from 'vitest';
-import {type AsJson} from './AsJson.mjs';
+import type {AsJson} from './AsJson.mjs';
 
 const asJsonString = 'test';
 const asJsonObject = {test: 'test'};

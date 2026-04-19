@@ -1,7 +1,6 @@
 import type {CoreResult, IsGuard, IsNotGuard} from '../types/core.mjs';
 import type {AnyRecord, ObjectMappedArray, ObjectMappedArrayTuples} from '../types/object.mjs';
 import {valueErrorBuilder} from './errorUtils.mjs';
-import {RecordMapper} from './RecordMapper.mjs';
 import {RecordPredicate} from './RecordPredicate.mjs';
 
 /**
@@ -144,11 +143,16 @@ export class RecordCore {
 		if (RecordCore.isNot(args[1])) {
 			throw new TypeError('omit: The second argument must be an object.');
 		}
-		const partial = {...args[1]};
-		for (const key of args[0]) {
-			delete partial[key];
-		}
-		return partial;
+		const keys = new Set(args[0]);
+		return Object.keys(args[1]).reduce(
+			(acc, key) => {
+				if (!keys.has(key as K)) {
+					(acc as any)[key] = args[1][key as keyof T];
+				}
+				return acc;
+			},
+			{} as Omit<T, K>,
+		);
 	}
 
 	/**
@@ -208,7 +212,9 @@ export class RecordCore {
 	 */
 	public static onKey<K extends PropertyKey>(key: K): <T extends Record<K, any>>(target: T) => T[K];
 	public static onKey<T extends Record<PropertyKey, any> | any[], K extends keyof T>(key: K): (target: T) => T[K] {
-		return RecordMapper.prop(key);
+		return (value: T): T[K] => {
+			return value[key];
+		};
 	}
 
 	/**
@@ -481,7 +487,9 @@ export function pick<K extends PropertyKey, T extends Partial<Record<K, unknown>
 	...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
 ): Record<PropertyKey, unknown> | ((current: T) => Record<PropertyKey, unknown>) {
 	if (args.length === 1) {
-		return RecordMapper.pick<K>(...args);
+		return <T extends Partial<Record<K, unknown>>>(value: T) => {
+			return RecordCore.pick(args[0], value);
+		};
 	}
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	return RecordCore.pick<K, T>(args[0], args[1] as any);
@@ -512,7 +520,9 @@ export function omit<K extends PropertyKey, T extends Partial<Record<K, unknown>
 	...args: [Iterable<K>] | [Iterable<K>, Record<PropertyKey, unknown>]
 ): Record<PropertyKey, unknown> | ((current: T) => Record<PropertyKey, unknown>) {
 	if (args.length === 1) {
-		return RecordMapper.omit<K>(...args);
+		return <T extends Partial<Record<K, unknown>>>(value: T) => {
+			return RecordCore.omit(args[0], value);
+		};
 	}
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	return RecordCore.omit<K, T>(args[0], args[1] as any);
