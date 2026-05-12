@@ -1,6 +1,15 @@
 {
 	"typescript.experimental.useTsgo": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.codeActionsOnSave": {
-		"source.fixAll.oxc": "always"
-	}
+		"source.action.useSortedKeys.biome": "explicit",
+		"source.fixAll.biome": "explicit"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"oxc.enable": false
 }

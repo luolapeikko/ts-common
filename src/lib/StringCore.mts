@@ -127,7 +127,7 @@ export class StringCore {
 	 * @since v1.0.2
 	 */
 	public static isNumeric<T = unknown>(value: T): value is IsGuard<T, NumberString> {
-		return StringCore.is(value) && !isNaN(Number(value)) && !isNaN(parseFloat(value));
+		return StringCore.is(value) && !Number.isNaN(Number(value)) && !Number.isNaN(parseFloat(value));
 	}
 
 	/**

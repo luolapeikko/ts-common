@@ -44,7 +44,7 @@ export class ErrorCore {
 	 */
 	public static assert(err: unknown): asserts err is Error {
 		if (!(err instanceof Error)) {
-			throw this.from(err);
+			throw ErrorCore.from(err);
 		}
 	}
 

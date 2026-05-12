@@ -19,8 +19,8 @@ export class IterCore {
 	 */
 	public static iterableResult<V>(value: V): CoreResult<InferIterable<V>, TypeError> {
 		return typeof value === 'object' && value !== null && typeof (value as InferIterable<V>)?.[Symbol.iterator] === 'function'
-			? {success: true, data: value as InferIterable<V>}
-			: {success: false, error: IterCore.buildValueErr(value, 'Iterable')};
+			? {data: value as InferIterable<V>, success: true}
+			: {error: IterCore.buildValueErr(value, 'Iterable'), success: false};
 	}
 
 	/**

@@ -36,7 +36,7 @@ export class UnknownError extends TypeError {
 	 * Constructor for the UnknownError class.
 	 * @param {unknown} err - The unknown error value to wrap.
 	 */
-	constructor(err: unknown) {
+	public constructor(err: unknown) {
 		super(toMsg(err));
 		this.unknownError = err;
 		this.name = 'UnknownError';

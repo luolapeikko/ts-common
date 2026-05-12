@@ -9,7 +9,7 @@ function getStringValue(value: unknown): string | undefined {
 		case 'symbol':
 			return undefined;
 		case 'number':
-			return isNaN(value) ? 'NaN' : JSON.stringify(value);
+			return Number.isNaN(value) ? 'NaN' : JSON.stringify(value);
 		default:
 			return JSON.stringify(value);
 	}

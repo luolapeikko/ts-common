@@ -16,8 +16,8 @@ const users: User[] = [user1, user2];
 
 const propertySymbol = Symbol('test');
 const object = {
-	foo: 'foo',
 	bar: 1,
+	foo: 'foo',
 	[propertySymbol]: true,
 };
 
@@ -114,7 +114,7 @@ describe('Test propUtils types', () => {
 			assertType<{foo: string; bar: number}>(excludeKeys(object, [propertySymbol]));
 
 			type UnionOfObjects = {type: 'foo'; foo: string} | {type: 'bar'; bar: number};
-			const object2: UnionOfObjects = {type: 'foo', foo: 'test'};
+			const object2: UnionOfObjects = {foo: 'test', type: 'foo'};
 			assertType<{foo: string} | {bar: number}>(excludeKeys(object2, ['type']));
 		});
 		it('should assert invalid excludeKeys types', function () {

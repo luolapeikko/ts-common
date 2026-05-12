@@ -12,8 +12,8 @@ type User = {
 };
 
 const testObject = {
-	foo: 'foo',
 	bar: 1,
+	foo: 'foo',
 	[propertySymbol]: true,
 };
 
@@ -126,7 +126,7 @@ describe('object Key filtering', function () {
 			assertType<{foo: string; bar: number}>(excludeKeys(testObject, [propertySymbol]));
 
 			type UnionOfObjects = {type: 'foo'; foo: string} | {type: 'bar'; bar: number};
-			const object2: UnionOfObjects = {type: 'foo', foo: 'test'};
+			const object2: UnionOfObjects = {foo: 'test', type: 'foo'};
 			assertType<{foo: string} | {bar: number}>(excludeKeys(object2, ['type']));
 		});
 		it('should assert invalid excludeKeys types', function () {

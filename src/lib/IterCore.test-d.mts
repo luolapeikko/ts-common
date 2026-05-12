@@ -56,6 +56,7 @@ describe('iterableUtils', () => {
 	});
 	describe('isAsyncIterable', () => {
 		it('should narrow type to AsyncIterable for async iterable types', () => {
+			// biome-ignore lint/suspicious/useAwait: This is a test for type narrowing, not actual async behavior
 			async function* asyncGenerator(): AsyncGenerator<number> {
 				yield 1;
 			}

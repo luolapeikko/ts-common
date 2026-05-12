@@ -17,8 +17,8 @@ export class RecordCore {
 	 */
 	public static result<T = unknown>(value: T): CoreResult<IsGuard<T, AnyRecord>, TypeError> {
 		return typeof value === 'object' && value !== null && !Array.isArray(value)
-			? {success: true, data: value as IsGuard<T, AnyRecord>}
-			: {success: false, error: RecordCore.buildValueErr(value, 'Record')};
+			? {data: value as IsGuard<T, AnyRecord>, success: true}
+			: {error: RecordCore.buildValueErr(value, 'Record'), success: false};
 	}
 
 	/**

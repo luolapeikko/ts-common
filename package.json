@@ -6,11 +6,15 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "exports": {
-    ".": {
+    "import": {
       "types": "./dist/index.d.mts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
-    }
+      "default": "./dist/index.mjs"
+    },
+    "require": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.cjs"
+    },
+    "default": "./dist/index.mjs"
   },
   "files": [
     "dist"
@@ -18,16 +22,13 @@
   "scripts": {
     "build": "tsdown src/index.mts --sourcemap --format cjs,esm --dts --clean",
     "prepublishOnly": "pnpm run build",
-    "lint": "oxlint && eslint . --cache --ext .ts",
+    "lint": "biome check",
     "test": "vitest test --typecheck --run --no-isolate --coverage",
     "coverage": "vitest test --typecheck --run --no-isolate --reporter=dot --coverage --coverage.reporter=lcov",
     "validate": "tsgo --noEmit --project tsconfig.test.json",
     "docs": "typedoc --options typedoc.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/luolapeikko/ts-common.git"
-  },
+  "repository": "github:luolapeikko/ts-common",
   "keywords": [
     "typescript",
     "common",
@@ -41,30 +42,19 @@
   },
   "homepage": "https://github.com/luolapeikko/ts-common#readme",
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
-    "@stylistic/eslint-plugin": "^5.10.0",
-    "@types/node": "^22.19.17",
-    "@typescript-eslint/eslint-plugin": "^8.58.2",
-    "@typescript-eslint/parser": "^8.58.2",
-    "@typescript/native-preview": "7.0.0-dev.20260418.1",
-    "@vitest/coverage-v8": "^4.1.4",
+    "@biomejs/biome": "^2.4.15",
+    "@types/node": "^22.19.19",
+    "@typescript/native-preview": "7.0.0-dev.20260512.1",
+    "@vitest/coverage-v8": "^4.1.6",
     "c8": "^11.0.0",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-sonarjs": "^3.0.7",
-    "oxlint": "^1.60.0",
-    "prettier": "^3.8.3",
-    "tsdown": "^0.21.9",
+    "tsdown": "^0.22.0",
     "tslib": "^2.8.1",
     "typedoc": "^0.28.19",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.58.2",
-    "vitest": "^4.1.4"
+    "typescript": "^6.0.3",
+    "vite": "^8.0.12",
+    "vitest": "^4.1.6"
   },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",

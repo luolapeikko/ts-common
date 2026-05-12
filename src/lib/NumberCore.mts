@@ -195,12 +195,12 @@ export class NumberCore {
 		}
 		if (typeof value === 'string') {
 			return NumberCore.isFloatStringLike(value)
-				? NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Number')})
-				: NumberCore.handleIntFrom(parseFloat(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Number')});
+				? NumberCore.handleFloatFrom(parseFloat(value), {buildErr: (value) => NumberCore.buildValueErr(value, 'Number'), orgValue: value})
+				: NumberCore.handleIntFrom(parseFloat(value), {buildErr: (value) => NumberCore.buildValueErr(value, 'Number'), orgValue: value});
 		}
 		if (NumberCore.isBigInt(value)) {
 			NumberCore.assertBigIntSafeNumber(value, NumberCore.buildCustomError(`${value} exceeds safe number range.`, 'Number'));
-			return NumberCore.handleIntFrom(Number(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Number')});
+			return NumberCore.handleIntFrom(Number(value), {buildErr: (value) => NumberCore.buildValueErr(value, 'Number'), orgValue: value});
 		}
 		throw args ? args.buildErr(args.orgValue) : NumberCore.buildValueErr(value, 'Number');
 	}
@@ -213,7 +213,7 @@ export class NumberCore {
 			return value + 0.0; // force int to float
 		}
 		if (typeof value === 'string') {
-			return NumberCore.handleFloatFrom(parseFloat(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Float')});
+			return NumberCore.handleFloatFrom(parseFloat(value), {buildErr: (value) => NumberCore.buildValueErr(value, 'Float'), orgValue: value});
 		}
 		if (NumberCore.isBigInt(value)) {
 			NumberCore.assertBigIntSafeNumber(value, NumberCore.buildCustomError(`${value} exceeds safe float range.`, 'Float'));
@@ -230,7 +230,7 @@ export class NumberCore {
 			return Math.trunc(value);
 		}
 		if (typeof value === 'string') {
-			return NumberCore.handleIntFrom(parseInt(value), {orgValue: value, buildErr: (value) => NumberCore.buildValueErr(value, 'Integer')});
+			return NumberCore.handleIntFrom(parseInt(value, 10), {buildErr: (value) => NumberCore.buildValueErr(value, 'Integer'), orgValue: value});
 		}
 		if (NumberCore.isBigInt(value)) {
 			NumberCore.assertBigIntSafeNumber(value, NumberCore.buildCustomError(`${value} exceeds safe integer range.`, 'Integer'));

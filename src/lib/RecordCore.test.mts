@@ -11,9 +11,9 @@ type User = {
 	role: 'admin' | 'user';
 	active?: boolean;
 };
-const user1: User = {id: 1, name: 'Alice', role: 'admin', active: true};
+const user1: User = {active: true, id: 1, name: 'Alice', role: 'admin'};
 const user2: User = {id: 2, name: 'Bob', role: 'user'};
-const users: User[] = [user1, user2, {id: 3, name: 'Carol', role: 'user', active: false}];
+const users: User[] = [user1, user2, {active: false, id: 3, name: 'Carol', role: 'user'}];
 
 const mapTest = {
 	key: {
@@ -173,8 +173,8 @@ describe('recordUtils', function () {
 	});
 	describe('includeKeys', () => {
 		it('should filter with callback boolean', function () {
-			expect(Object.keys(includeKeys({foo: true, bar: false}, () => true)).length).to.be.eq(2);
-			expect(Object.keys(includeKeys({foo: true, bar: false}, () => false)).length).to.be.eq(0);
+			expect(Object.keys(includeKeys({bar: false, foo: true}, () => true)).length).to.be.eq(2);
+			expect(Object.keys(includeKeys({bar: false, foo: true}, () => false)).length).to.be.eq(0);
 		});
 
 		it('should filter with specific key', function () {
@@ -190,8 +190,8 @@ describe('recordUtils', function () {
 		});
 
 		it('should filter with iterables', function () {
-			expect(Object.keys(includeKeys({foo: true, bar: false}, ['foo']))).to.be.eql(['foo']);
-			expect(Object.keys(includeKeys({foo: true, bar: false}, new Set<'foo'>(['foo'])))).to.be.eql(['foo']);
+			expect(Object.keys(includeKeys({bar: false, foo: true}, ['foo']))).to.be.eql(['foo']);
+			expect(Object.keys(includeKeys({bar: false, foo: true}, new Set<'foo'>(['foo'])))).to.be.eql(['foo']);
 		});
 
 		it('should keep symbol properties', function () {
@@ -201,21 +201,21 @@ describe('recordUtils', function () {
 		});
 
 		it('should drop non-enumerable properties', function () {
-			const input = Object.defineProperty({}, 'test', {value: true, enumerable: false});
+			const input = Object.defineProperty({}, 'test', {enumerable: false, value: true});
 			expect((includeKeys(input, () => true) as any).test).to.be.eq(undefined);
 		});
 
 		it('should keep enumerable properties', function () {
-			const input = Object.defineProperty({}, 'test', {value: true, enumerable: true});
+			const input = Object.defineProperty({}, 'test', {enumerable: true, value: true});
 			expect((includeKeys(input, () => true) as any).test).to.be.eq(true);
 		});
 
 		it('should keep property descriptors', function () {
 			const descriptor = {
+				configurable: false,
+				enumerable: true,
 				get(): void {},
 				set(): void {},
-				enumerable: true,
-				configurable: false,
 			};
 
 			const input = Object.defineProperty({}, 'test', descriptor) as {test: unknown};
@@ -244,8 +244,8 @@ describe('recordUtils', function () {
 	});
 	describe('excludeKeys', () => {
 		it('should filter with callback boolean', function () {
-			expect(Object.keys(excludeKeys({foo: true, bar: false}, () => true)).length).to.be.eq(0);
-			expect(Object.keys(excludeKeys({foo: true, bar: false}, () => false)).length).to.be.eq(2);
+			expect(Object.keys(excludeKeys({bar: false, foo: true}, () => true)).length).to.be.eq(0);
+			expect(Object.keys(excludeKeys({bar: false, foo: true}, () => false)).length).to.be.eq(2);
 		});
 
 		it('should filter with specific key', function () {
@@ -261,8 +261,8 @@ describe('recordUtils', function () {
 		});
 
 		it('should filter with iterables', function () {
-			expect(Object.keys(excludeKeys({foo: true, bar: false}, ['bar']))).to.be.eql(['foo']);
-			expect(Object.keys(excludeKeys({foo: true, bar: false}, new Set(['bar'])))).to.be.eql(['foo']);
+			expect(Object.keys(excludeKeys({bar: false, foo: true}, ['bar']))).to.be.eql(['foo']);
+			expect(Object.keys(excludeKeys({bar: false, foo: true}, new Set(['bar'])))).to.be.eql(['foo']);
 		});
 
 		it('should keep symbol properties', function () {
@@ -272,16 +272,16 @@ describe('recordUtils', function () {
 		});
 
 		it('should drop non-enumerable properties', function () {
-			const input = Object.defineProperty({}, 'test', {value: true, enumerable: false});
+			const input = Object.defineProperty({}, 'test', {enumerable: false, value: true});
 			expect((excludeKeys(input, () => false) as any).test).to.be.eql(undefined);
 		});
 
 		it('should keep property descriptors', function () {
 			const descriptor = {
+				configurable: false,
+				enumerable: true,
 				get(): void {},
 				set(): void {},
-				enumerable: true,
-				configurable: false,
 			};
 
 			const input = Object.defineProperty({}, 'test', descriptor);

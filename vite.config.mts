@@ -4,17 +4,17 @@ import {defineConfig} from 'vitest/config';
 
 export default defineConfig({
 	test: {
-		reporters: ['verbose', 'github-actions'],
 		coverage: {
-			provider: 'v8',
-			include: ['src/lib/*.mts'],
 			exclude: ['src/**/index.mts', 'src/**/*.test-d.mts'],
+			include: ['src/lib/*.mts'],
+			provider: 'v8',
 			reporter: ['text'],
 		},
 		include: ['**/*.test.mts'],
+		reporters: ['verbose', 'github-actions'],
 		typecheck: {
-			tsconfig: './tsconfig.test.json',
 			include: ['**/*.test-d.mts'],
+			tsconfig: './tsconfig.test.json',
 		},
 	},
 });

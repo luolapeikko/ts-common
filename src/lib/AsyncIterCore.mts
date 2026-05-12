@@ -17,8 +17,8 @@ export class AsyncIterCore {
 	 */
 	public static result<V>(value: V): CoreResult<InferAsyncIterable<V>, TypeError> {
 		return typeof value === 'object' && value !== null && typeof (value as InferAsyncIterable<V>)?.[Symbol.asyncIterator] === 'function'
-			? {success: true, data: value as InferAsyncIterable<V>}
-			: {success: false, error: valueErrorBuilder(value, 'AsyncIterable', false)};
+			? {data: value as InferAsyncIterable<V>, success: true}
+			: {error: valueErrorBuilder(value, 'AsyncIterable', false), success: false};
 	}
 
 	/**

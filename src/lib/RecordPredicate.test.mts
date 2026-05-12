@@ -7,9 +7,9 @@ type User = {
 	role: 'admin' | 'user';
 	active?: boolean;
 };
-const user1: User = {id: 1, name: 'Alice', role: 'admin', active: true};
+const user1: User = {active: true, id: 1, name: 'Alice', role: 'admin'};
 const user2: User = {id: 2, name: 'Bob', role: 'user'};
-const users: User[] = [user1, user2, {id: 3, name: 'Carol', role: 'user', active: false}];
+const users: User[] = [user1, user2, {active: false, id: 3, name: 'Carol', role: 'user'}];
 
 describe('recordUtils', function () {
 	describe('onKeyEqual', () => {
@@ -21,13 +21,13 @@ describe('recordUtils', function () {
 		it('correctly filters matching values', () => {
 			const isAdmin = R.propEq('role', 'admin');
 			const result = users.filter(isAdmin);
-			expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
+			expect(result).toEqual([{active: true, id: 1, name: 'Alice', role: 'admin'}]);
 		});
 
 		it('handles optional properties', () => {
 			const isActive = R.propEq('active', true);
 			const result = users.filter(isActive);
-			expect(result).toEqual([{id: 1, name: 'Alice', role: 'admin', active: true}]);
+			expect(result).toEqual([{active: true, id: 1, name: 'Alice', role: 'admin'}]);
 		});
 
 		it('returns an empty array when no match is found', () => {
@@ -55,7 +55,7 @@ describe('recordUtils', function () {
 			const result = users.filter(isNotAdmin);
 			expect(result).toEqual([
 				{id: 2, name: 'Bob', role: 'user'},
-				{id: 3, name: 'Carol', role: 'user', active: false},
+				{active: false, id: 3, name: 'Carol', role: 'user'},
 			]);
 		});
 
@@ -64,7 +64,7 @@ describe('recordUtils', function () {
 			const result = users.filter(isNotActive);
 			expect(result).toEqual([
 				{id: 2, name: 'Bob', role: 'user'},
-				{id: 3, name: 'Carol', role: 'user', active: false},
+				{active: false, id: 3, name: 'Carol', role: 'user'},
 			]);
 		});
 
